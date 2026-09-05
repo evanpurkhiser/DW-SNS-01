@@ -67,6 +67,9 @@ source:
   - path: main.c
     unless: [cmsis_rtos2]
   - path: src/app.c
+  - path: src/analog_sampler.c
+  - path: src/battery_level.c
+  - path: src/battery_sensor.c
   - path: src/light_sensor.c
   - path: src/state_detector.c
 

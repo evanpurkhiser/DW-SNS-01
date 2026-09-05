@@ -19,6 +19,11 @@ The photoresistor and pulldown form a voltage divider. D9 drives the divider
 only during sampling, and D10 feeds the MG24 ADC. This removes the divider's
 continuous current while the device sleeps.
 
+The XIAO's onboard battery-monitor circuit connects its divided battery voltage
+to PD4. Firmware drives PD3 only while measuring it, waits for the divider to
+settle, and then switches it off again. No external battery-sensing components
+are required.
+
 The XIAO antenna switch is board-specific hardware not configured by the
 BRD4187C-generated project. Firmware drives PB5 high to power the switch and
 PB4 low to select the built-in ceramic antenna.
@@ -55,6 +60,11 @@ State changes are sent directly to coordinator address `0x0000`, endpoint 1.
 The manufacturer and model Basic-cluster attributes are `Evan Purkhiser` and
 `DW-SNS-01`.
 
+The Power Configuration cluster exposes battery voltage in 100 mV units and
+battery percentage in Zigbee's half-percent units. Both attributes are sent
+immediately after a connection and every 12 hours thereafter. A failed report
+is retried after five minutes.
+
 ## Connection lifecycle
 
 When no network is available, the device stays awake and starts network
@@ -74,6 +84,12 @@ sample takes about 3.6 ms. Measured application wake time is roughly 12 ms per
 10-second interval when no radio report is needed. Zigbee reporting adds radio
 and stack wake time only when the detected state changes.
 
+Battery measurement adds roughly 1 ms of divider settling plus ADC conversion
+twice per day. Remaining percentage is estimated from a piecewise-linear,
+rested-voltage curve for a single-cell lithium-ion battery. It is useful for a
+low-battery indication but is not as precise as coulomb counting, particularly
+under load or near the flat middle of the discharge curve.
+
 Debug output and the USB bridge affect bench measurements. Final battery-life
 validation should be performed from the battery terminals with USB removed.
 
@@ -81,10 +97,13 @@ validation should be performed from the battery terminals with USB removed.
 
 The application keeps hardware acquisition and state policy separate:
 
-- `light_sensor.c` owns GPIO power gating and ADC conversion.
+- `analog_sampler.c` owns one-shot ADC conversion shared by both sensors.
+- `light_sensor.c` owns light-sensor GPIO power gating and acquisition.
+- `battery_sensor.c` owns the XIAO battery-divider enable and acquisition.
+- `battery_level.c` converts millivolts to Zigbee battery attributes.
 - `state_detector.c` owns hysteresis and consecutive-sample state changes.
 - `app.c` owns Zigbee lifecycle, reporting, status LED behavior, and sleep.
 - `app_config.h` collects board pins and tunable policy constants.
 
-`state_detector.c` has host-side tests because its behavior is deterministic
-and independent of the Silicon Labs SDK.
+`state_detector.c` and `battery_level.c` have host-side tests because their
+behavior is deterministic and independent of the Silicon Labs SDK.

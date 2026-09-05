@@ -8,6 +8,14 @@
 #define APP_SENSOR_INPUT_PIN 5U
 #define APP_SENSOR_INPUT iadcPosInputPortAPin5
 
+// The onboard divider exposes half of VBAT on PD4 while PD3 is high.
+#define APP_BATTERY_ENABLE_PORT gpioPortD
+#define APP_BATTERY_ENABLE_PIN 3U
+#define APP_BATTERY_INPUT_PORT gpioPortD
+#define APP_BATTERY_INPUT_PIN 4U
+#define APP_BATTERY_INPUT iadcPosInputPortDPin4
+#define APP_BATTERY_SETTLE_US 1000U
+
 // Power the XIAO RF switch and select its built-in ceramic antenna.
 #define APP_RF_SWITCH_POWER_PORT gpioPortB
 #define APP_RF_SWITCH_POWER_PIN 5U
@@ -26,6 +34,8 @@
 #define APP_SAMPLE_INTERVAL_MS 10000U
 #define APP_JOIN_RETRY_INTERVAL_MS 5000U
 #define APP_CONNECTION_TIMEOUT_MS 120000U
+#define APP_BATTERY_REPORT_INTERVAL_MS (12UL * 60UL * 60UL * 1000UL)
+#define APP_BATTERY_REPORT_RETRY_MS (5UL * 60UL * 1000UL)
 #define APP_RADIO_TX_POWER_DBM 19
 
 #define APP_ENDPOINT 1U

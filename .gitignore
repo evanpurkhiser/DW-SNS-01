@@ -4,6 +4,7 @@
 build/
 firmware/build/
 firmware/tests/test_state_detector
+firmware/tests/test_battery_level
 *.bin
 *.elf
 *.hex
@@ -14,6 +15,8 @@ firmware/tests/test_state_detector
 # Repository-local SDKs and tools
 .silabs-home/
 silabs/autogen/
+firmware/cmake_gcc/autogen_toolchain.cmake
+firmware/cmake_iar/autogen_toolchain.cmake
 
 # Superseded prototype generation
 .generated-2025/

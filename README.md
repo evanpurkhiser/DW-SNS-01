@@ -16,9 +16,10 @@ running."
 The same approach may work with other dishwashers that use a simple projected
 status light, but Bosch InfoLight is the intended and tested signal.
 
-The hardware is a Seeed Studio XIAO MG24, a photoresistor, and a 10 kOhm
-resistor. The sensor divider is powered only while sampling to minimize idle
-current.
+The hardware is a Seeed Studio XIAO MG24, a photoresistor, a 10 kOhm resistor,
+and a single-cell rechargeable lithium battery. The sensor divider is powered
+only while sampling to minimize idle current. Battery voltage is measured with
+the XIAO's onboard switched divider, so it needs no additional components.
 
 > Status: working prototype. Pairing, sleepy operation, light detection, and
 > direct Zigbee reports have been tested with ZHA.
@@ -59,11 +60,17 @@ Pins, thresholds, and timing are collected in
 - Once connected, the device sleeps in EM2 between samples.
 - D9 powers the light-sensor divider only during each short ADC sample.
 - State changes are reported through the Occupancy Sensing cluster.
+- Battery voltage and an estimated remaining percentage are reported through
+  the Power Configuration cluster after connecting and every 12 hours.
 - If connection attempts fail for two minutes, the device enters EM4 until it
   is reset or power-cycled.
 - The built-in ceramic antenna is selected and the radio transmits at 19 dBm.
 
 The Zigbee manufacturer is `Evan Purkhiser` and the model is `DW-SNS-01`.
+Battery percentage is an estimate derived from unloaded voltage, not a
+coulomb-counter measurement, so battery load, temperature, and cell chemistry
+can affect it. The battery sensing follows the [XIAO MG24 battery-voltage
+documentation][xiao-battery].
 
 ## Development environment
 
@@ -132,3 +139,4 @@ license notices, and downloaded SDK components are governed by Silicon Labs'
 applicable license terms.
 
 [infolight]: https://www.youtube.com/watch?v=6vhSRFh9Ccw
+[xiao-battery]: https://wiki.seeedstudio.com/xiao_mg24_getting_started/#reading-battery-voltage

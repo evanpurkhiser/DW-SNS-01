@@ -22,7 +22,7 @@
 	#define ZCL_GENERATED_MIN_MAX_DEFAULTS { }
 
 
-#define ZCL_GENERATED_ATTRIBUTE_COUNT (17)
+#define ZCL_GENERATED_ATTRIBUTE_COUNT (20)
 
 // This is an array of sl_zigbee_af_attribute_metadata_t structures.
 #define ZCL_GENERATED_ATTRIBUTES { \
@@ -39,20 +39,24 @@
 		  { 0x000A, ZCL_OCTET_STRING_ATTRIBUTE_TYPE, 17, (ATTRIBUTE_MASK_SINGLETON), { NULL } }, /* 10 Cluster: Basic, Attribute: product code, Side: server*/ \
 	  { 0x000B, ZCL_CHAR_STRING_ATTRIBUTE_TYPE, 65, (ATTRIBUTE_MASK_SINGLETON), { NULL } }, /* 11 Cluster: Basic, Attribute: product url, Side: server*/ \
 	  { 0x4000, ZCL_CHAR_STRING_ATTRIBUTE_TYPE, 17, (ATTRIBUTE_MASK_SINGLETON), { NULL } }, /* 12 Cluster: Basic, Attribute: sw build id, Side: server*/ \
-	  { 0x0000, ZCL_BITMAP8_ATTRIBUTE_TYPE, 1, (0x00), { (uint8_t*)0x00  } }, /* 13 Cluster: Occupancy Sensing, Attribute: occupancy, Side: server*/ \
-		  { 0x0001, ZCL_ENUM8_ATTRIBUTE_TYPE, 1, (0x00), { (uint8_t*)0x00  } }, /* 14 Cluster: Occupancy Sensing, Attribute: occupancy sensor type, Side: server*/ \
-		  { 0x0002, ZCL_BITMAP8_ATTRIBUTE_TYPE, 1, (0x00), { (uint8_t*)0x01  } }, /* 15 Cluster: Occupancy Sensing, Attribute: occupancy sensor type bitmap, Side: server*/ \
-		  { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (0x00), { (uint8_t*)2  } } /* 16 Cluster: Occupancy Sensing, Attribute: cluster revision, Side: server*/ \
-		 }
+	  { 0x0020, ZCL_INT8U_ATTRIBUTE_TYPE, 1, (ATTRIBUTE_MASK_SINGLETON), { (uint8_t*)0xFF  } }, /* 13 Cluster: Power Configuration, Attribute: battery voltage, Side: server*/ \
+		  { 0x0021, ZCL_INT8U_ATTRIBUTE_TYPE, 1, (ATTRIBUTE_MASK_SINGLETON), { (uint8_t*)0xFF  } }, /* 14 Cluster: Power Configuration, Attribute: battery percentage remaining, Side: server*/ \
+		  { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (ATTRIBUTE_MASK_SINGLETON), { (uint8_t*)2  } }, /* 15 Cluster: Power Configuration, Attribute: cluster revision, Side: server*/ \
+		  { 0x0000, ZCL_BITMAP8_ATTRIBUTE_TYPE, 1, (0x00), { (uint8_t*)0x00  } }, /* 16 Cluster: Occupancy Sensing, Attribute: occupancy, Side: server*/ \
+		  { 0x0001, ZCL_ENUM8_ATTRIBUTE_TYPE, 1, (0x00), { (uint8_t*)0x00  } }, /* 17 Cluster: Occupancy Sensing, Attribute: occupancy sensor type, Side: server*/ \
+		  { 0x0002, ZCL_BITMAP8_ATTRIBUTE_TYPE, 1, (0x00), { (uint8_t*)0x01  } }, /* 18 Cluster: Occupancy Sensing, Attribute: occupancy sensor type bitmap, Side: server*/ \
+		  { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, (0x00), { (uint8_t*)2  } } /* 19 Cluster: Occupancy Sensing, Attribute: cluster revision, Side: server*/ \
+				 }
 
  
 
-#define ZCL_GENERATED_CLUSTER_COUNT (2)
+#define ZCL_GENERATED_CLUSTER_COUNT (3)
 	
 // This is an array of sl_zigbee_af_cluster_t structures.
 #define ZCL_GENERATED_CLUSTERS { \
   { 0x0000, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[0]), 13, 0, CLUSTER_MASK_SERVER, NULL }, /* 0, Endpoint Id: 1, Cluster: Basic, Side: server*/ \
-	  { 0x0406, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[13]), 4, 5, CLUSTER_MASK_SERVER, NULL } /* 1, Endpoint Id: 1, Cluster: Occupancy Sensing, Side: server*/ \
+	  { 0x0001, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[13]), 3, 0, CLUSTER_MASK_SERVER, NULL }, /* 1, Endpoint Id: 1, Cluster: Power Configuration, Side: server*/ \
+	  { 0x0406, (sl_zigbee_af_attribute_metadata_t*)&(generatedAttributes[16]), 4, 5, CLUSTER_MASK_SERVER, NULL } /* 2, Endpoint Id: 1, Cluster: Occupancy Sensing, Side: server*/ \
 	 }
 
  
@@ -60,13 +64,13 @@
 
 // This is an array of sl_zigbee_af_endpoint_type_t structures.
 #define ZCL_GENERATED_ENDPOINT_TYPES { \
-  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[0])), 2, 5 }, \
+  { ((sl_zigbee_af_cluster_t*)&(generatedClusters[0])), 3, 5 }, \
 	 } 
 // Largest attribute size is needed for various buffers
 #define ZCL_ATTRIBUTE_LARGEST (65)
 
 // Total size of singleton attributes
-#define ZCL_ATTRIBUTE_SINGLETONS_SIZE (189)
+#define ZCL_ATTRIBUTE_SINGLETONS_SIZE (193)
 
 // Total size of attribute storage
 #define ZCL_ATTRIBUTE_MAX_SIZE (5)
@@ -120,16 +124,18 @@
 #define ZCL_GENERATED_CLUSTER_MANUFACTURER_CODE_COUNT (0)
 #define ZCL_GENERATED_CLUSTER_MANUFACTURER_CODES { \
   { 0x00, 0x00 }  \
-		 } 
+			 }
 // This is an array of sl_zigbee_af_manufacturer_code_entry_t structures for attributes.
 #define ZCL_GENERATED_ATTRIBUTE_MANUFACTURER_CODE_COUNT (0)
 #define ZCL_GENERATED_ATTRIBUTE_MANUFACTURER_CODES { \
   { 0x00, 0x00 } \
-																	 } 
+																				 }
 // Array of sl_zigbee_af_plugin_reporting_entry_t structures.
-#define SL_ZIGBEE_ZCL_GENERATED_REPORTING_CONFIG_DEFAULTS_TABLE_SIZE (1)
+#define SL_ZIGBEE_ZCL_GENERATED_REPORTING_CONFIG_DEFAULTS_TABLE_SIZE (3)
 #define SL_ZIGBEE_ZCL_GENERATED_REPORTING_CONFIG_DEFAULTS { \
-  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0001, 0x0406, 0x0000, CLUSTER_MASK_SERVER, 0x0000, 0, 65534, 0 }, /* Endpoint Id: 1, Cluster: Occupancy Sensing, Attribute: occupancy */ \
+  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0001, 0x0001, 0x0020, CLUSTER_MASK_SERVER, 0x0000, 3600, 43200, 1 }, /* Endpoint Id: 1, Cluster: Power Configuration, Attribute: battery voltage */ \
+	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0001, 0x0001, 0x0021, CLUSTER_MASK_SERVER, 0x0000, 3600, 43200, 2 }, /* Endpoint Id: 1, Cluster: Power Configuration, Attribute: battery percentage remaining */ \
+	  { SL_ZIGBEE_ZCL_REPORTING_DIRECTION_REPORTED, 0x0001, 0x0406, 0x0000, CLUSTER_MASK_SERVER, 0x0000, 0, 65534, 0 }, /* Endpoint Id: 1, Cluster: Occupancy Sensing, Attribute: occupancy */ \
 	 } 
 
 #define SL_ZIGBEE_ZCL_MANUFACTURER_CODE 0x1002
@@ -137,10 +143,12 @@
 
 // All Enabled Clusters
 #define ZCL_USING_BASIC_CLUSTER_SERVER
+#define ZCL_USING_POWER_CONFIG_CLUSTER_SERVER
 #define ZCL_USING_OCCUPANCY_SENSING_CLUSTER_SERVER
 
 // Cluster Counts
 #define SL_ZIGBEE_ZCL_BASIC_CLUSTER_SERVER_ENDPOINT_COUNT (1)
+#define SL_ZIGBEE_ZCL_POWER_CONFIG_CLUSTER_SERVER_ENDPOINT_COUNT (1)
 #define SL_ZIGBEE_ZCL_OCCUPANCY_SENSING_CLUSTER_SERVER_ENDPOINT_COUNT (1)
 
 // All Enabled Cluster Attributes
@@ -157,6 +165,9 @@
 #define ZCL_USING_BASIC_CLUSTER_PRODUCT_CODE_ATTRIBUTE
 #define ZCL_USING_BASIC_CLUSTER_PRODUCT_URL_ATTRIBUTE
 #define ZCL_USING_BASIC_CLUSTER_SW_BUILD_ID_ATTRIBUTE
+#define ZCL_USING_POWER_CONFIG_CLUSTER_BATTERY_VOLTAGE_ATTRIBUTE
+#define ZCL_USING_POWER_CONFIG_CLUSTER_BATTERY_PERCENTAGE_REMAINING_ATTRIBUTE
+#define ZCL_USING_POWER_CONFIG_CLUSTER_CLUSTER_REVISION_SERVER_ATTRIBUTE
 #define ZCL_USING_OCCUPANCY_SENSING_CLUSTER_OCCUPANCY_ATTRIBUTE
 #define ZCL_USING_OCCUPANCY_SENSING_CLUSTER_OCCUPANCY_SENSOR_TYPE_ATTRIBUTE
 #define ZCL_USING_OCCUPANCY_SENSING_CLUSTER_OCCUPANCY_SENSOR_TYPE_BITMAP_ATTRIBUTE

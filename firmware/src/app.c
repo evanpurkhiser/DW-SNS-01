@@ -1,5 +1,7 @@
 #include "app/framework/include/af.h"
 #include "app_config.h"
+#include "battery_level.h"
+#include "battery_sensor.h"
 #include "em_gpio.h"
 #include "end-device-support.h"
 #include "light_sensor.h"
@@ -13,6 +15,7 @@ static sl_zigbee_af_event_t connection_timeout_event;
 static sl_zigbee_af_event_t pairing_led_event;
 static sl_zigbee_af_event_t connected_led_event;
 static sl_zigbee_af_event_t sample_event;
+static sl_zigbee_af_event_t battery_event;
 static state_detector_t detector;
 static bool pairing_awake_requirement;
 static bool state_reported_for_connection;
@@ -141,8 +144,10 @@ static void connection_timeout_event_handler(sl_zigbee_af_event_t *event)
 
   sl_zigbee_af_event_set_inactive(&join_event);
   sl_zigbee_af_event_set_inactive(&sample_event);
+  sl_zigbee_af_event_set_inactive(&battery_event);
   pairing_led_off();
   GPIO_PinOutClear(APP_SENSOR_POWER_PORT, APP_SENSOR_POWER_PIN);
+  GPIO_PinOutClear(APP_BATTERY_ENABLE_PORT, APP_BATTERY_ENABLE_PIN);
   (void)sl_zigbee_af_network_steering_stop();
   sl_zigbee_af_stop_move_cb();
   keep_awake_while_unpaired(false);
@@ -158,6 +163,7 @@ static void join_event_handler(sl_zigbee_af_event_t *event)
     pairing_led_off();
     keep_awake_while_unpaired(false);
     sl_zigbee_af_event_set_active(&sample_event);
+    sl_zigbee_af_event_set_active(&battery_event);
     return;
   }
 
@@ -217,6 +223,69 @@ static bool publish_state(bool running)
   return send_status == SL_STATUS_OK;
 }
 
+static void battery_report_sent_callback(sl_zigbee_outgoing_message_type_t type,
+                                         uint16_t destination, sl_zigbee_aps_frame_t *aps_frame,
+                                         uint16_t message_length, uint8_t *message,
+                                         sl_status_t status)
+{
+  (void)type;
+  (void)message_length;
+  (void)message;
+  sl_zigbee_app_debug_println("battery tx: destination=0x%04x cluster=0x%04x status=0x%lx",
+                              destination, aps_frame->clusterId, (unsigned long)status);
+  if (status != SL_STATUS_OK && sl_zigbee_af_network_state() == SL_ZIGBEE_JOINED_NETWORK) {
+    sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_RETRY_MS);
+  }
+}
+
+static bool publish_battery(battery_level_t level)
+{
+  sl_zigbee_af_status_t voltage_status = sl_zigbee_af_write_server_attribute(
+    APP_ENDPOINT, ZCL_POWER_CONFIG_CLUSTER_ID, ZCL_BATTERY_VOLTAGE_ATTRIBUTE_ID,
+    &level.voltage_100mv, ZCL_INT8U_ATTRIBUTE_TYPE);
+  sl_zigbee_af_status_t percentage_status = sl_zigbee_af_write_server_attribute(
+    APP_ENDPOINT, ZCL_POWER_CONFIG_CLUSTER_ID, ZCL_BATTERY_PERCENTAGE_REMAINING_ATTRIBUTE_ID,
+    &level.percentage_half, ZCL_INT8U_ATTRIBUTE_TYPE);
+  if (voltage_status != SL_ZIGBEE_ZCL_STATUS_SUCCESS ||
+      percentage_status != SL_ZIGBEE_ZCL_STATUS_SUCCESS) {
+    sl_zigbee_app_debug_println("battery: attribute write failed voltage=0x%x percentage=0x%x",
+                                voltage_status, percentage_status);
+    return false;
+  }
+
+  uint8_t report[] = {
+    (uint8_t)(ZCL_BATTERY_VOLTAGE_ATTRIBUTE_ID & 0xFFU),
+    (uint8_t)(ZCL_BATTERY_VOLTAGE_ATTRIBUTE_ID >> 8),
+    ZCL_INT8U_ATTRIBUTE_TYPE,
+    level.voltage_100mv,
+    (uint8_t)(ZCL_BATTERY_PERCENTAGE_REMAINING_ATTRIBUTE_ID & 0xFFU),
+    (uint8_t)(ZCL_BATTERY_PERCENTAGE_REMAINING_ATTRIBUTE_ID >> 8),
+    ZCL_INT8U_ATTRIBUTE_TYPE,
+    level.percentage_half,
+  };
+  sl_zigbee_af_fill_command_global_server_to_client_report_attributes(ZCL_POWER_CONFIG_CLUSTER_ID,
+                                                                      report, sizeof(report));
+  sl_zigbee_af_set_command_endpoints(APP_ENDPOINT, APP_COORDINATOR_ENDPOINT);
+  sl_status_t send_status = sl_zigbee_af_send_command_unicast_with_cb(
+    SL_ZIGBEE_OUTGOING_DIRECT, SL_ZIGBEE_ZIGBEE_COORDINATOR_ADDRESS, battery_report_sent_callback);
+  return send_status == SL_STATUS_OK;
+}
+
+static void battery_event_handler(sl_zigbee_af_event_t *event)
+{
+  (void)event;
+  sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_INTERVAL_MS);
+
+  battery_sensor_reading_t reading = battery_sensor_sample();
+  battery_level_t level = battery_level_from_millivolts(reading.millivolts);
+  sl_zigbee_app_debug_println("battery: %u mV raw=%u range=%u..%u level=%u%%", reading.millivolts,
+                              reading.raw_average, reading.raw_minimum, reading.raw_maximum,
+                              level.percentage_half / 2U);
+  if (!publish_battery(level)) {
+    sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_RETRY_MS);
+  }
+}
+
 static void sample_event_handler(sl_zigbee_af_event_t *event)
 {
   (void)event;
@@ -264,12 +333,14 @@ void sl_zigbee_af_main_init_cb(void)
   sl_zigbee_app_debug_println("radio: tx power=%d dBm status=0x%lx", APP_RADIO_TX_POWER_DBM,
                               (unsigned long)radio_status);
   light_sensor_init();
+  battery_sensor_init();
   GPIO_PinModeSet(APP_PAIRING_LED_PORT, APP_PAIRING_LED_PIN, gpioModePushPull, 1);
   sl_zigbee_af_event_init(&join_event, join_event_handler);
   sl_zigbee_af_event_init(&connection_timeout_event, connection_timeout_event_handler);
   sl_zigbee_af_event_init(&pairing_led_event, pairing_led_event_handler);
   sl_zigbee_af_event_init(&connected_led_event, connected_led_event_handler);
   sl_zigbee_af_event_init(&sample_event, sample_event_handler);
+  sl_zigbee_af_event_init(&battery_event, battery_event_handler);
   pairing_led_off();
   start_connection_timeout();
   sl_zigbee_af_event_set_active(&join_event);
@@ -285,10 +356,12 @@ void sl_zigbee_af_stack_status_cb(sl_status_t status)
     connected_led_start();
     keep_awake_while_unpaired(false);
     sl_zigbee_af_event_set_active(&sample_event);
+    sl_zigbee_af_event_set_active(&battery_event);
   } else if (status == SL_STATUS_NETWORK_DOWN) {
     sl_zigbee_app_debug_println("pairing: network down; retrying");
     state_reported_for_connection = false;
     sl_zigbee_af_event_set_inactive(&sample_event);
+    sl_zigbee_af_event_set_inactive(&battery_event);
     pairing_led_start();
     keep_awake_while_unpaired(true);
     start_connection_timeout();
