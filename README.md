@@ -123,4 +123,4 @@ The firmware image starts at `0x08006000`, preserving the XIAO bootloader.
 See [`docs/DESIGN.md`](docs/DESIGN.md) for implementation details and design
 tradeoffs.
 
-[infolight]: https://www.bosch-home.com/us/products/dishwashers/100-series
+[infolight]: https://www.youtube.com/watch?v=6vhSRFh9Ccw
