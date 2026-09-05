@@ -1,0 +1,30 @@
+name: firmware tests
+
+on:
+  push:
+    paths:
+      - "firmware/src/**"
+      - "firmware/tests/**"
+      - "Makefile"
+      - ".github/workflows/firmware.yml"
+  pull_request:
+    paths:
+      - "firmware/src/**"
+      - "firmware/tests/**"
+      - "Makefile"
+      - ".github/workflows/firmware.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: firmware-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: State detector tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run host-side tests
+        run: make test

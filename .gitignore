@@ -1,0 +1,28 @@
+.DS_Store
+
+# Build products
+build/
+firmware/build/
+firmware/tests/test_state_detector
+*.bin
+*.elf
+*.hex
+*.map
+*.out
+*.s37
+
+# Repository-local SDKs and tools
+.arduino/
+.silabs-home/
+.tools/
+
+# Superseded prototype generation
+.generated-2025/
+firmware/zigbee_z3_switch.*
+
+# Editors and language servers
+.cache/
+.cache/clangd/
+.idea/
+.vscode/
+compile_commands.json

@@ -1,0 +1,85 @@
+project_name: dishwasher_sensor
+label: Dishwasher Light Sensor
+package: zigbee
+category: Zigbee Application
+quality: production
+description: Battery-powered Zigbee occupancy sensor for a dishwasher floor indicator.
+author: Evan
+
+component:
+  - id: sl_main
+  - id: cli
+    instance: [example]
+  - id: iostream_recommended_console
+  - id: zigbee_debug_basic
+  - id: zigbee_debug_print
+  - id: zigbee_pro_leaf_stack
+  - id: zigbee_zcl_framework_core
+  - id: zigbee_basic
+  - id: zigbee_end_device_support
+  - id: zigbee_network_steering
+  - id: zigbee_reporting
+  - id: zigbee_scan_dispatch
+  - id: zigbee_update_tc_link_key
+  - id: clock_manager
+  - id: emlib_iadc
+  - id: emlib_gpio
+  - id: udelay
+  - id: zigbee_application_bootloader
+  - id: toolchain_gcc_lto
+
+configuration:
+  - name: SL_BOARD_ENABLE_VCOM
+    value: 1
+  - name: SL_CLI_MAX_INPUT_ARGUMENTS
+    value: 16
+  - name: SLI_ZIGBEE_PRIMARY_NETWORK_DEVICE_TYPE
+    value: SLI_ZIGBEE_NETWORK_DEVICE_TYPE_SLEEPY_END_DEVICE
+  - name: SL_ZIGBEE_AF_REJOIN_ATTEMPTS_MAX
+    value: 255
+  - name: SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_RADIO_TX_POWER
+    value: 19
+  - name: SL_RAIL_UTIL_PA_POWER_DECI_DBM
+    value: 190
+  - name: SLI_ZIGBEE_PRIMARY_NETWORK_SECURITY_TYPE
+    value: SLI_ZIGBEE_NETWORK_SECURITY_TYPE_3_0
+  - name: SL_ZIGBEE_BINDING_TABLE_SIZE
+    value: 10
+  - name: SL_IOSTREAM_EUSART_VCOM_RESTRICT_ENERGY_MODE_TO_ALLOW_RECEPTION
+    value: 0
+    condition: [iostream_eusart]
+  - name: SL_IOSTREAM_EUSART_VCOM_FLOW_CONTROL_TYPE
+    value: SL_IOSTREAM_EUSART_UART_FLOW_CTRL_NONE
+    condition: [iostream_eusart]
+  - name: SL_CLI_PROMPT_STRING
+    value: "\"dishwasher_sensor>\""
+  - name: NVM3_DEFAULT_NVM_SIZE
+    value: 32768
+    condition: [device_series_2]
+  - name: SL_PSA_ITS_SUPPORT_V1_DRIVER
+    value: 0
+  - name: SL_PSA_ITS_SUPPORT_V2_DRIVER
+    value: 0
+  - name: SL_PSA_ITS_SUPPORT_V3_DRIVER
+    value: 1
+
+source:
+  - path: main.c
+    unless: [cmsis_rtos2]
+  - path: src/app.c
+  - path: src/light_sensor.c
+  - path: src/state_detector.c
+
+config_file:
+  - path: config/zcl/zcl_config.zap
+    file_id: zap_configuration_file_id
+    directory: zcl
+
+include:
+  - path: src
+
+filter:
+  - name: Wireless Technology
+    value: [Zigbee]
+  - name: Device Type
+    value: [SoC]

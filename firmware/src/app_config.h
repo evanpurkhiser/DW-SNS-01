@@ -1,0 +1,34 @@
+#ifndef APP_CONFIG_H
+#define APP_CONFIG_H
+
+// D9 (PA4) powers the LDR; D10 (PA5) reads the LDR/10k divider midpoint.
+#define APP_SENSOR_POWER_PORT gpioPortA
+#define APP_SENSOR_POWER_PIN 4U
+#define APP_SENSOR_INPUT_PORT gpioPortA
+#define APP_SENSOR_INPUT_PIN 5U
+#define APP_SENSOR_INPUT iadcPosInputPortAPin5
+
+// Power the XIAO RF switch and select its built-in ceramic antenna.
+#define APP_RF_SWITCH_POWER_PORT gpioPortB
+#define APP_RF_SWITCH_POWER_PIN 5U
+#define APP_RF_SWITCH_SELECT_PORT gpioPortB
+#define APP_RF_SWITCH_SELECT_PIN 4U
+
+#define APP_PAIRING_LED_PORT gpioPortA
+#define APP_PAIRING_LED_PIN 7U
+#define APP_PAIRING_LED_BLINK_MS 500U
+#define APP_CONNECTED_LED_DURATION_MS 2000U
+
+#define APP_SENSOR_ON_MV 800U
+#define APP_SENSOR_OFF_MV 600U
+#define APP_SENSOR_SETTLE_US 100U
+#define APP_REQUIRED_STABLE_SAMPLES 2U
+#define APP_SAMPLE_INTERVAL_MS 10000U
+#define APP_JOIN_RETRY_INTERVAL_MS 5000U
+#define APP_CONNECTION_TIMEOUT_MS 120000U
+#define APP_RADIO_TX_POWER_DBM 19
+
+#define APP_ENDPOINT 1U
+#define APP_COORDINATOR_ENDPOINT 1U
+
+#endif
