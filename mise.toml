@@ -24,12 +24,14 @@ linux-x64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.
 [env]
 SILABS_HOME = "{{config_root}}/.silabs-home"
 
+[tasks."setup:silabs"]
+description = "Install the Silicon Labs SDK and compiler"
+run = "HOME=$SILABS_HOME slt --non-interactive install --file silabs/pkg.lock"
+
 [tasks.setup]
-description = "Install the Silicon Labs SDK and Git hooks"
-run = [
-  "HOME=$SILABS_HOME slt --non-interactive install --file silabs/pkg.lock",
-  "prek install",
-]
+description = "Set up the development environment and Git hooks"
+depends = ["setup:silabs"]
+run = "prek install"
 
 [tasks.test]
 description = "Run host-side unit tests"
@@ -40,7 +42,7 @@ description = "Format source and repository files"
 run = [
   "clang-format -i firmware/src/*.[ch] firmware/tests/*.[ch]",
   "tombi format --offline mise.toml prek.toml silabs/pkg.slt silabs/pkg.lock",
-  "yamlfmt .github/workflows/firmware.yml",
+  "yamlfmt .github/workflows/*.yml",
 ]
 
 [tasks."format:check"]
@@ -48,7 +50,7 @@ description = "Check source and repository formatting"
 run = [
   "clang-format --dry-run --Werror firmware/src/*.[ch] firmware/tests/*.[ch]",
   "tombi format --offline --check mise.toml prek.toml silabs/pkg.slt silabs/pkg.lock",
-  "yamlfmt -lint .github/workflows/firmware.yml",
+  "yamlfmt -lint .github/workflows/*.yml",
 ]
 
 [tasks.lint]
