@@ -1,6 +1,7 @@
 # DW-SNS-01
 
 [![firmware tests](https://github.com/evanpurkhiser/DW-SNS-01/actions/workflows/firmware.yml/badge.svg)](https://github.com/evanpurkhiser/DW-SNS-01/actions/workflows/firmware.yml)
+[![lint](https://github.com/evanpurkhiser/DW-SNS-01/actions/workflows/lint.yml/badge.svg)](https://github.com/evanpurkhiser/DW-SNS-01/actions/workflows/lint.yml)
 
 **Dishwasher light sensor, version 01** (short: **DW-SNS-01**).
 
@@ -122,5 +123,12 @@ The firmware image starts at `0x08006000`, preserving the XIAO bootloader.
 
 See [`docs/DESIGN.md`](docs/DESIGN.md) for implementation details and design
 tradeoffs.
+
+## License
+
+Project-authored code and documentation are available under the
+[MIT License](LICENSE). Generated Silicon Labs files retain their existing
+license notices, and downloaded SDK components are governed by Silicon Labs'
+applicable license terms.
 
 [infolight]: https://www.youtube.com/watch?v=6vhSRFh9Ccw
