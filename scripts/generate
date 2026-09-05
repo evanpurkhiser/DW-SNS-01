@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+silabs_home=${SILABS_HOME:-"$root/.silabs-home"}
+cd "$root"
+
+slc_dir=$(HOME="$silabs_home" slt where slc-cli/6.0.23 --ignore-slconf --non-interactive)
+java_dir=$(HOME="$silabs_home" slt where java21 --ignore-slconf --non-interactive)
+
+if [[ -z "$slc_dir" || -z "$java_dir" ]]; then
+	echo "Silicon Labs packages are missing; run 'mise run setup' first" >&2
+	exit 1
+fi
+
+java_home="$java_dir"
+if [[ -d "$java_dir/jre" ]]; then
+	java_home="$java_dir/jre"
+fi
+
+HOME="$silabs_home" JAVA_HOME="$java_home" "$slc_dir/slc" generate \
+	firmware/dishwasher_sensor.slcp \
+	--slt-config silabs/user.slconf \
+	--with brd4187c \
+	--export-destination firmware \
+	--force

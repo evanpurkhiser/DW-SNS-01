@@ -1,30 +1,47 @@
-name: firmware tests
-
+name: firmware
 on:
   push:
     paths:
       - "firmware/src/**"
       - "firmware/tests/**"
       - "Makefile"
+      - "mise.toml"
+      - "prek.toml"
+      - "silabs/**"
+      - "scripts/**"
       - ".github/workflows/firmware.yml"
   pull_request:
     paths:
       - "firmware/src/**"
       - "firmware/tests/**"
       - "Makefile"
+      - "mise.toml"
+      - "prek.toml"
+      - "silabs/**"
+      - "scripts/**"
       - ".github/workflows/firmware.yml"
   workflow_dispatch:
-
 concurrency:
   group: firmware-tests-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
-  test:
-    name: State detector tests
+  check:
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Run host-side tests
-        run: make test
+      - uses: jdx/mise-action@v3
+        with:
+          version: 2026.8.14
+          install: true
+          cache: true
+          experimental: true
+      - name: Cache Silicon Labs SDK
+        uses: actions/cache@v4
+        with:
+          path: .silabs-home
+          key: silabs-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('silabs/pkg.lock') }}
+      - name: Install Silicon Labs SDK
+        run: mise run setup
+      - name: Check firmware
+        run: mise run check

@@ -51,7 +51,7 @@ add_custom_command(TARGET dishwasher_sensor
     POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_SREC_CMD} "$<TARGET_FILE:dishwasher_sensor>" "$<TARGET_FILE_DIR:dishwasher_sensor>/$<TARGET_FILE_BASE_NAME:dishwasher_sensor>.s37"
     COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_IHEX_CMD} "$<TARGET_FILE:dishwasher_sensor>" "$<TARGET_FILE_DIR:dishwasher_sensor>/$<TARGET_FILE_BASE_NAME:dishwasher_sensor>.hex"
-    COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_BIN_CMD}  "$<TARGET_FILE:dishwasher_sensor>" "$<TARGET_FILE_DIR:dishwasher_sensor>/$<TARGET_FILE_BASE_NAME:dishwasher_sensor>.bin" 
+    COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_BIN_CMD}  "$<TARGET_FILE:dishwasher_sensor>" "$<TARGET_FILE_DIR:dishwasher_sensor>/$<TARGET_FILE_BASE_NAME:dishwasher_sensor>.bin"
 )
 
 # Run post-build pipeline to perform additional post-processing

@@ -20,12 +20,12 @@ endif
 
 # Values set by the initial generation
 PROJECTNAME = dishwasher_sensor
-ARM_GCC_DIR_WIN = 
+ARM_GCC_DIR_WIN =
 ARM_GCC_DIR_OSX = /Users/evan/silabs/tools/arm-gnu-toolchain-12.2.rel1-darwin-arm64-arm-none-eabi
-ARM_GCC_DIR_LINUX = 
-POST_BUILD_EXE_WIN = 
+ARM_GCC_DIR_LINUX =
+POST_BUILD_EXE_WIN =
 POST_BUILD_EXE_OSX = $(USER_DIR)/.silabs/slt/installs/archive/Commander.app/Contents/MacOS/commander
-POST_BUILD_EXE_LINUX = 
+POST_BUILD_EXE_LINUX =
 
 # Pre-defined definitions in this file
 ifeq ($(OS),Windows_NT)
@@ -59,29 +59,29 @@ else
 endif
 
 # Values that should be appended by the sub-makefiles
-C_SOURCE_FILES   = 
-CXX_SOURCE_FILES = 
-ASM_SOURCE_FILES = 
+C_SOURCE_FILES   =
+CXX_SOURCE_FILES =
+ASM_SOURCE_FILES =
 
-LIBS = 
+LIBS =
 
-C_DEFS   = 
-ASM_DEFS = 
+C_DEFS   =
+ASM_DEFS =
 
-INCLUDES = 
+INCLUDES =
 
-C_FLAGS           = 
-C_FLAGS_DEBUG     = 
-C_FLAGS_RELEASE   = 
-CXX_FLAGS         = 
-CXX_FLAGS_DEBUG   = 
-CXX_FLAGS_RELEASE = 
-ASM_FLAGS         = 
-ASM_FLAGS_DEBUG   = 
-ASM_FLAGS_RELEASE = 
-LD_FLAGS          = 
+C_FLAGS           =
+C_FLAGS_DEBUG     =
+C_FLAGS_RELEASE   =
+CXX_FLAGS         =
+CXX_FLAGS_DEBUG   =
+CXX_FLAGS_RELEASE =
+ASM_FLAGS         =
+ASM_FLAGS_DEBUG   =
+ASM_FLAGS_RELEASE =
+LD_FLAGS          =
 
-OBJS = 
+OBJS =
 
 ####################################################################
 # Definitions of toolchain.                                        #
@@ -144,12 +144,12 @@ override CXXFLAGS = $(CXX_FLAGS) $(C_DEFS) $(INCLUDES) $(DEPFLAGS)
 override ASMFLAGS = $(ASM_FLAGS) $(ASM_DEFS) $(INCLUDES) $(DEPFLAGS)
 
 # Rule Definitions
-debug: C_FLAGS += $(C_FLAGS_DEBUG) 
+debug: C_FLAGS += $(C_FLAGS_DEBUG)
 debug: CXX_FLAGS += $(CXX_FLAGS_DEBUG)
 debug: ASM_FLAGS += $(ASM_FLAGS_DEBUG)
 debug: | pre-build $(OUTPUT_DIR)/$(PROJECTNAME).out post-build
 
-release: C_FLAGS += $(C_FLAGS_RELEASE) 
+release: C_FLAGS += $(C_FLAGS_RELEASE)
 release: CXX_FLAGS += $(CXX_FLAGS_RELEASE)
 release: ASM_FLAGS += $(ASM_FLAGS_RELEASE)
 release: | pre-build $(OUTPUT_DIR)/$(PROJECTNAME).out post-build

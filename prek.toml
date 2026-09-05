@@ -1,0 +1,65 @@
+exclude = '''(?x)^firmware/(
+  autogen/|
+  cmake_gcc/|
+  cmake_iar/|
+  config/|
+  gecko_sdk_4/|
+  platform/|
+  protocol/|
+  util/|
+  app\.c$|
+  board\.c$|
+  dishwasher_sensor\.Makefile$|
+  main\.c$|
+  sl_component_catalog\.h$|
+  sl_event_handler\.[ch]$|
+  vscode\.conf$|
+  .*\.(ewp|eww|project\.mak)$
+)'''
+
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+hooks = [
+  { id = "trailing-whitespace", priority = 0 },
+  { id = "end-of-file-fixer", priority = 1 },
+  { id = "mixed-line-ending", priority = 2 },
+  { id = "check-merge-conflict", priority = 100 },
+  { id = "check-added-large-files", priority = 100 },
+  { id = "check-executables-have-shebangs", priority = 100 },
+  { id = "check-shebang-scripts-are-executable", priority = 100 },
+  { id = "check-case-conflict", priority = 100 },
+  { id = "check-symlinks", priority = 100 },
+  { id = "detect-private-key", priority = 100 },
+  { id = "check-json", priority = 100 },
+  { id = "check-toml", priority = 100 },
+  { id = "check-yaml", priority = 100 },
+]
+
+[[repos]]
+repo = "https://github.com/crate-ci/typos"
+rev = "v1.48.0"
+hooks = [{ id = "typos", args = ["--force-exclude"], priority = 100 }]
+
+[[repos]]
+repo = "https://github.com/rhysd/actionlint"
+rev = "v1.7.12"
+hooks = [{ id = "actionlint-system", priority = 11 }]
+
+[[repos]]
+repo = "https://github.com/evanpurkhiser/prek-personal"
+rev = "v1.0.2"
+hooks = [
+  { id = "shfmt-system", priority = 10 },
+  { id = "shellcheck-system", priority = 11 },
+]
+
+[[repos]]
+repo = "local"
+hooks = [
+  { id = "clang-format", name = "clang-format", entry = "clang-format --dry-run --Werror", language = "system", files = '^firmware/(src|tests)/.*\.[ch]$', priority = 10 },
+  { id = "clang-tidy", name = "clang-tidy", entry = "scripts/lint-c", language = "system", pass_filenames = false, files = '^firmware/(src/state_detector\.[ch]|tests/)', priority = 11 },
+  { id = "checkmake", name = "checkmake", entry = "checkmake", language = "system", files = "(^|/)Makefile$", priority = 11 },
+  { id = "tombi", name = "tombi", entry = "tombi format --offline --check", language = "system", types = ["toml"], priority = 11 },
+  { id = "yamlfmt", name = "yamlfmt", entry = "yamlfmt -lint", language = "system", files = '^\.github/workflows/.*\.ya?ml$', priority = 11 },
+]

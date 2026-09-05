@@ -1,0 +1,8 @@
+# Silicon Labs packages required to generate and build DW-SNS-01.
+version = "1"
+
+[dependency]
+gcc-arm-none-eabi = "12.2.rel1"
+simplicity-sdk = "2025.6.2"
+slc-cli = "6.0.23"
+zap = "2026.06.17"

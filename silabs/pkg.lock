@@ -1,0 +1,13 @@
+version = "1"
+
+[dependency]
+gcc-arm-none-eabi = [{ installer = "conan", ref = "gcc-arm-none-eabi/12.2.rel1@silabs#a2910f647691a3764cd3e48412673f25", type = "toolchain", version = "12.2.rel1" }]
+java21 = [{ installer = "archive", type = "tools", version = "21.0.6" }]
+"pintool_com.silabs.sdk.stack.sisdk_2025.6.2" = [{ installer = "conan", ref = "pintool_com.silabs.sdk.stack.sisdk_2025.6.2/2025.6.2@silabs#4e97e1423235bb5fdbc4088f23ef166a", type = "software", version = "2025.6.2" }]
+python = [{ installer = "archive", type = "tools", version = "3.10.3" }]
+simplicity-sdk = [{ installer = "conan", ref = "simplicity-sdk/2025.6.2@silabs#004b8ea597d0fa0948a4ead98a6ef0e9", type = "sdk", version = "2025.6.2" }]
+slc-cli = [{ installer = "archive", type = "tools", version = "6.0.23" }]
+zap = [{ installer = "archive", type = "apack", version = "2026.06.17" }]
+
+[engine]
+conan-repos = ["https://conan.silabs.net"]

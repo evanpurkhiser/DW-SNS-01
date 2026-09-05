@@ -1,0 +1,76 @@
+[settings]
+experimental = true
+
+[tools]
+actionlint = "1.7.12"
+checkmake = "0.3.2"
+clang = "23.1.0"
+clang-format = "23.1.0"
+"conda:clang-tools" = "23.1.0"
+prek = "0.4.9"
+shellcheck = "0.11.0"
+shfmt = "3.13.1"
+tombi = "1.5.1"
+yamlfmt = "0.21.0"
+
+[tools."http:slt"]
+version = "1.1.0"
+bin_path = "."
+
+[tools."http:slt".platforms]
+macos-arm64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.1.0-mac-arm64.zip", checksum = "sha256:f2b465488ac7133ec823baded40d473652e495ef3cdcf91f195d3ddbc44341a6" }
+linux-x64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.1.0-linux-x64.zip", checksum = "sha256:8c2dd5091c15d5dd7b8fc978a512c49d9b9c5da83d4d0b820cfe983b38ef3612" }
+
+[env]
+SILABS_HOME = "{{config_root}}/.silabs-home"
+
+[tasks.setup]
+description = "Install the Silicon Labs SDK and Git hooks"
+run = [
+  "HOME=$SILABS_HOME slt --non-interactive install --file silabs/pkg.lock",
+  "prek install",
+]
+
+[tasks.test]
+description = "Run host-side unit tests"
+run = "make test"
+
+[tasks.format]
+description = "Format source and repository files"
+run = [
+  "clang-format -i firmware/src/*.[ch] firmware/tests/*.[ch]",
+  "tombi format --offline mise.toml prek.toml silabs/pkg.slt silabs/pkg.lock",
+  "yamlfmt .github/workflows/firmware.yml",
+]
+
+[tasks."format:check"]
+description = "Check source and repository formatting"
+run = [
+  "clang-format --dry-run --Werror firmware/src/*.[ch] firmware/tests/*.[ch]",
+  "tombi format --offline --check mise.toml prek.toml silabs/pkg.slt silabs/pkg.lock",
+  "yamlfmt -lint .github/workflows/firmware.yml",
+]
+
+[tasks.lint]
+description = "Run repository linters"
+run = "prek run --all-files"
+
+[tasks.build]
+description = "Build the XIAO MG24 firmware"
+run = "make firmware"
+
+[tasks.check]
+description = "Run formatting, lint, tests, and the firmware build"
+depends = ["lint", "test", "build"]
+
+[tasks.generate]
+description = "Regenerate Silicon Labs project files from the SLCP manifest"
+run = "scripts/generate"
+
+[tasks.monitor]
+description = "Open the serial console (set PORT and BAUD as needed)"
+run = "make monitor"
+
+[tasks.clean]
+description = "Remove firmware and host-test build products"
+run = "make clean"

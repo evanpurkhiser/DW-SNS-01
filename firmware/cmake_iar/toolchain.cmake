@@ -83,7 +83,7 @@ set(CMAKE_C_FLAGS_RELEASE               "" CACHE STRING "")
 set(CMAKE_CXX_FLAGS_RELEASE             "" CACHE STRING "")
 
 # Response file support
-# IAR cannot consume Ninja Multi-Config generated response files at the moment 
+# IAR cannot consume Ninja Multi-Config generated response files at the moment
 # SET(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS   1)
 # SET(CMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS 1)
 # SET(CMAKE_NINJA_FORCE_RESPONSE_FILE         1 CACHE INTERNAL "")

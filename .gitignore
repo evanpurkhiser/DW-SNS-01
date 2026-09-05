@@ -12,9 +12,8 @@ firmware/tests/test_state_detector
 *.s37
 
 # Repository-local SDKs and tools
-.arduino/
 .silabs-home/
-.tools/
+silabs/autogen/
 
 # Superseded prototype generation
 .generated-2025/

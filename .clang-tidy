@@ -1,0 +1,10 @@
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-branch-clone,
+  cert-*,
+  clang-analyzer-*,
+  performance-*,
+  portability-*
+WarningsAsErrors: "*"
+HeaderFilterRegex: "firmware/src/.*"

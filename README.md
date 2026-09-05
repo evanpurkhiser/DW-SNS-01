@@ -4,10 +4,16 @@
 
 **Dishwasher light sensor, version 01** (short: **DW-SNS-01**).
 
-A small, battery-powered Zigbee sensor that watches the red floor indicator
-under a dishwasher. It exposes the indicator as a standard Zigbee Occupancy
-Sensing attribute, so Home Assistant with ZHA and other compatible
-coordinators can treat `occupied` as "dishwasher running."
+A small, battery-powered Zigbee sensor designed for Bosch dishwashers with
+[InfoLight][infolight]. InfoLight projects a red spot onto the floor while a
+wash cycle is running and turns it off when the cycle is complete. DW-SNS-01
+watches that existing indicator without modifying the dishwasher and exposes
+it as a standard Zigbee Occupancy Sensing attribute, so Home Assistant with
+ZHA and other compatible coordinators can treat `occupied` as "dishwasher
+running."
+
+The same approach may work with other dishwashers that use a simple projected
+status light, but Bosch InfoLight is the intended and tested signal.
 
 The hardware is a Seeed Studio XIAO MG24, a photoresistor, and a 10 kOhm
 resistor. The sensor divider is powered only while sampling to minimize idle
@@ -22,6 +28,7 @@ current.
 | ----------- | ----------------------------------------------------------- |
 | `firmware/` | Simplicity SDK Zigbee firmware, generated files, and tests  |
 | `docs/`     | Hardware and firmware design notes                          |
+| `scripts/`  | Standalone project generation and static-analysis helpers   |
 
 ## Wiring
 
@@ -57,49 +64,51 @@ Pins, thresholds, and timing are collected in
 
 The Zigbee manufacturer is `Evan Purkhiser` and the model is `DW-SNS-01`.
 
-## Building firmware
+## Development environment
 
 The generated project uses Silicon Labs Simplicity SDK 2025.6.2 and GNU Arm
-Embedded 12.2. Local SDK and tool downloads are deliberately not committed.
+Embedded 12.2. The complete command-line environment is pinned in `mise.toml`:
+formatters, linters, and `prek`. Silicon Labs SLT then installs the exact SDK
+and compiler versions from `silabs/pkg.slt`.
 
-With the repository-local Silicon Labs tools installed in `.silabs-home/`:
-
-```sh
-make check
-make firmware
-```
-
-If the tools are installed elsewhere, provide their paths explicitly:
+Bootstrap a checkout with:
 
 ```sh
-make firmware \
-  SILABS_INSTALLS_DIR=/path/to/slt/installs \
-  SILABS_SDK_DIR=/path/to/simplicity_sdk \
-  ARM_GCC_DIR=/path/to/arm-gnu-toolchain
+mise install
+mise run setup
 ```
 
-The state detector tests use the host C compiler and do not require the
-Simplicity SDK:
+The large Silicon Labs packages remain local to `.silabs-home/` and are not
+committed. Setup also installs the repository's `prek` Git hooks.
+
+Build and validate everything with the same task used by CI:
 
 ```sh
-make test
+mise run check
 ```
 
-Run `make help` for all developer commands.
-
-## Flashing and monitoring
-
-Reset or power-cycle the XIAO if it has entered EM4, then run:
+Useful focused tasks are:
 
 ```sh
-make flash
-make monitor
+mise run test
+mise run format
+mise run build
+mise run generate
 ```
+
+Run `mise tasks` for the complete list. The Make targets remain available as
+the lower-level implementation and support explicit path overrides when needed.
+
+## Monitoring
+
+Reset or power-cycle the XIAO if it has entered EM4, then run
+`mise run monitor` to open the serial console. Flashing is currently performed
+outside the managed development environment and will be documented separately.
 
 Override auto-detected USB settings when needed:
 
 ```sh
-make monitor PORT=/dev/cu.usbmodemXXXX BAUD=115200
+PORT=/dev/cu.usbmodemXXXX BAUD=115200 mise run monitor
 ```
 
 The firmware image starts at `0x08006000`, preserving the XIAO bootloader.
@@ -113,3 +122,5 @@ The firmware image starts at `0x08006000`, preserving the XIAO bootloader.
 
 See [`docs/DESIGN.md`](docs/DESIGN.md) for implementation details and design
 tradeoffs.
+
+[infolight]: https://www.bosch-home.co.uk/en/mkt-product/SMV4HAX40G
