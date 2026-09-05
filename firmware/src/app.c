@@ -26,6 +26,7 @@ static uint32_t longest_awake_ticks_since_sample;
 static uint16_t wake_count_since_sample;
 static uint32_t report_started_tick;
 static bool report_timing_active;
+static uint8_t battery_retry_count;
 static sl_power_manager_em_transition_event_handle_t power_transition_handle;
 
 static uint32_t ticks_to_microseconds(uint32_t ticks)
@@ -223,6 +224,25 @@ static bool publish_state(bool running)
   return send_status == SL_STATUS_OK;
 }
 
+static void schedule_battery_retry(void)
+{
+  if (sl_zigbee_af_network_state() != SL_ZIGBEE_JOINED_NETWORK) {
+    return;
+  }
+
+  if (battery_retry_count >= APP_BATTERY_REPORT_MAX_RETRIES) {
+    sl_zigbee_app_debug_println("battery: retry limit reached; waiting for regular report");
+    battery_retry_count = 0U;
+    sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_INTERVAL_MS);
+    return;
+  }
+
+  battery_retry_count++;
+  sl_zigbee_app_debug_println("battery: scheduling retry %u/%u", battery_retry_count,
+                              APP_BATTERY_REPORT_MAX_RETRIES);
+  sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_RETRY_MS);
+}
+
 static void battery_report_sent_callback(sl_zigbee_outgoing_message_type_t type,
                                          uint16_t destination, sl_zigbee_aps_frame_t *aps_frame,
                                          uint16_t message_length, uint8_t *message,
@@ -233,8 +253,10 @@ static void battery_report_sent_callback(sl_zigbee_outgoing_message_type_t type,
   (void)message;
   sl_zigbee_app_debug_println("battery tx: destination=0x%04x cluster=0x%04x status=0x%lx",
                               destination, aps_frame->clusterId, (unsigned long)status);
-  if (status != SL_STATUS_OK && sl_zigbee_af_network_state() == SL_ZIGBEE_JOINED_NETWORK) {
-    sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_RETRY_MS);
+  if (status == SL_STATUS_OK) {
+    battery_retry_count = 0U;
+  } else {
+    schedule_battery_retry();
   }
 }
 
@@ -282,7 +304,7 @@ static void battery_event_handler(sl_zigbee_af_event_t *event)
                               reading.raw_average, reading.raw_minimum, reading.raw_maximum,
                               level.percentage_half / 2U);
   if (!publish_battery(level)) {
-    sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_RETRY_MS);
+    schedule_battery_retry();
   }
 }
 
@@ -353,6 +375,7 @@ void sl_zigbee_af_stack_status_cb(sl_status_t status)
     initialize_device_identity();
     sl_zigbee_af_event_set_inactive(&connection_timeout_event);
     state_reported_for_connection = false;
+    battery_retry_count = 0U;
     connected_led_start();
     keep_awake_while_unpaired(false);
     sl_zigbee_af_event_set_active(&sample_event);
@@ -360,6 +383,7 @@ void sl_zigbee_af_stack_status_cb(sl_status_t status)
   } else if (status == SL_STATUS_NETWORK_DOWN) {
     sl_zigbee_app_debug_println("pairing: network down; retrying");
     state_reported_for_connection = false;
+    battery_retry_count = 0U;
     sl_zigbee_af_event_set_inactive(&sample_event);
     sl_zigbee_af_event_set_inactive(&battery_event);
     pairing_led_start();

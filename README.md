@@ -61,7 +61,8 @@ Pins, thresholds, and timing are collected in
 - D9 powers the light-sensor divider only during each short ADC sample.
 - State changes are reported through the Occupancy Sensing cluster.
 - Battery voltage and an estimated remaining percentage are reported through
-  the Power Configuration cluster after connecting and every 12 hours.
+  the Power Configuration cluster after connecting and every 12 hours. Failed
+  sends are retried up to three times at five-minute intervals.
 - If connection attempts fail for two minutes, the device enters EM4 until it
   is reset or power-cycled.
 - The built-in ceramic antenna is selected and the radio transmits at 19 dBm.

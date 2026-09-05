@@ -63,7 +63,8 @@ The manufacturer and model Basic-cluster attributes are `Evan Purkhiser` and
 The Power Configuration cluster exposes battery voltage in 100 mV units and
 battery percentage in Zigbee's half-percent units. Both attributes are sent
 immediately after a connection and every 12 hours thereafter. A failed report
-is retried after five minutes.
+is retried after five minutes, up to three times. After exhausting that budget,
+the device sleeps until the next regular 12-hour report.
 
 ## Connection lifecycle
 
