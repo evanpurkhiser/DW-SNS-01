@@ -33,7 +33,7 @@
 		  { 0x0004, ZCL_CHAR_STRING_ATTRIBUTE_TYPE, 33, (ATTRIBUTE_MASK_SINGLETON), { NULL } }, /* 4 Cluster: Basic, Attribute: manufacturer name, Side: server*/ \
 	  { 0x0005, ZCL_CHAR_STRING_ATTRIBUTE_TYPE, 33, (ATTRIBUTE_MASK_SINGLETON), { NULL } }, /* 5 Cluster: Basic, Attribute: model identifier, Side: server*/ \
 	  { 0x0006, ZCL_CHAR_STRING_ATTRIBUTE_TYPE, 17, (ATTRIBUTE_MASK_SINGLETON), { NULL } }, /* 6 Cluster: Basic, Attribute: date code, Side: server*/ \
-	  { 0x0007, ZCL_ENUM8_ATTRIBUTE_TYPE, 1, (ATTRIBUTE_MASK_SINGLETON), { (uint8_t*)0x00  } }, /* 7 Cluster: Basic, Attribute: power source, Side: server*/ \
+	  { 0x0007, ZCL_ENUM8_ATTRIBUTE_TYPE, 1, (ATTRIBUTE_MASK_SINGLETON), { (uint8_t*)0x03  } }, /* 7 Cluster: Basic, Attribute: power source, Side: server*/ \
 		  { 0x0008, ZCL_ENUM8_ATTRIBUTE_TYPE, 1, (ATTRIBUTE_MASK_SINGLETON), { (uint8_t*)0xFF  } }, /* 8 Cluster: Basic, Attribute: generic device class, Side: server*/ \
 		  { 0x0009, ZCL_ENUM8_ATTRIBUTE_TYPE, 1, (ATTRIBUTE_MASK_SINGLETON), { (uint8_t*)0xFF  } }, /* 9 Cluster: Basic, Attribute: generic device type, Side: server*/ \
 		  { 0x000A, ZCL_OCTET_STRING_ATTRIBUTE_TYPE, 17, (ATTRIBUTE_MASK_SINGLETON), { NULL } }, /* 10 Cluster: Basic, Attribute: product code, Side: server*/ \

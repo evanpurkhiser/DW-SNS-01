@@ -105,17 +105,24 @@ static void initialize_device_identity(void)
   uint8_t manufacturer[] = {14,  'E', 'v', 'a', 'n', ' ', 'P', 'u',
                             'r', 'k', 'h', 'i', 's', 'e', 'r'};
   uint8_t model[] = {9, 'D', 'W', '-', 'S', 'N', 'S', '-', '0', '1'};
-  uint8_t power_source = 0x03U; // Battery
+  uint8_t power_source = SL_ZIGBEE_ZCL_POWER_SOURCE_BATTERY;
 
-  (void)sl_zigbee_af_write_server_attribute(APP_ENDPOINT, ZCL_BASIC_CLUSTER_ID,
-                                            ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID, manufacturer,
-                                            ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
-  (void)sl_zigbee_af_write_server_attribute(APP_ENDPOINT, ZCL_BASIC_CLUSTER_ID,
-                                            ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID, model,
-                                            ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
-  (void)sl_zigbee_af_write_server_attribute(APP_ENDPOINT, ZCL_BASIC_CLUSTER_ID,
-                                            ZCL_POWER_SOURCE_ATTRIBUTE_ID, &power_source,
-                                            ZCL_ENUM8_ATTRIBUTE_TYPE);
+  sl_zigbee_af_status_t manufacturer_status = sl_zigbee_af_write_server_attribute(
+    APP_ENDPOINT, ZCL_BASIC_CLUSTER_ID, ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID, manufacturer,
+    ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+  sl_zigbee_af_status_t model_status = sl_zigbee_af_write_server_attribute(
+    APP_ENDPOINT, ZCL_BASIC_CLUSTER_ID, ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID, model,
+    ZCL_CHAR_STRING_ATTRIBUTE_TYPE);
+  sl_zigbee_af_status_t power_status = sl_zigbee_af_write_server_attribute(
+    APP_ENDPOINT, ZCL_BASIC_CLUSTER_ID, ZCL_POWER_SOURCE_ATTRIBUTE_ID, &power_source,
+    ZCL_ENUM8_ATTRIBUTE_TYPE);
+  if (manufacturer_status != SL_ZIGBEE_ZCL_STATUS_SUCCESS ||
+      model_status != SL_ZIGBEE_ZCL_STATUS_SUCCESS ||
+      power_status != SL_ZIGBEE_ZCL_STATUS_SUCCESS) {
+    sl_zigbee_app_debug_println("identity: attribute write failed manufacturer=0x%x model=0x%x "
+                                "power=0x%x",
+                                manufacturer_status, model_status, power_status);
+  }
 }
 
 static void keep_awake_while_unpaired(bool keep_awake)
@@ -260,7 +267,7 @@ static void battery_report_sent_callback(sl_zigbee_outgoing_message_type_t type,
   }
 }
 
-static bool publish_battery(battery_level_t level)
+static bool write_battery_attributes(battery_level_t level)
 {
   sl_zigbee_af_status_t voltage_status = sl_zigbee_af_write_server_attribute(
     APP_ENDPOINT, ZCL_POWER_CONFIG_CLUSTER_ID, ZCL_BATTERY_VOLTAGE_ATTRIBUTE_ID,
@@ -272,6 +279,15 @@ static bool publish_battery(battery_level_t level)
       percentage_status != SL_ZIGBEE_ZCL_STATUS_SUCCESS) {
     sl_zigbee_app_debug_println("battery: attribute write failed voltage=0x%x percentage=0x%x",
                                 voltage_status, percentage_status);
+    return false;
+  }
+
+  return true;
+}
+
+static bool publish_battery(battery_level_t level)
+{
+  if (!write_battery_attributes(level)) {
     return false;
   }
 
@@ -293,16 +309,22 @@ static bool publish_battery(battery_level_t level)
   return send_status == SL_STATUS_OK;
 }
 
-static void battery_event_handler(sl_zigbee_af_event_t *event)
+static battery_level_t sample_battery(void)
 {
-  (void)event;
-  sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_INTERVAL_MS);
-
   battery_sensor_reading_t reading = battery_sensor_sample();
   battery_level_t level = battery_level_from_millivolts(reading.millivolts);
   sl_zigbee_app_debug_println("battery: %u mV raw=%u range=%u..%u level=%u%%", reading.millivolts,
                               reading.raw_average, reading.raw_minimum, reading.raw_maximum,
                               level.percentage_half / 2U);
+  return level;
+}
+
+static void battery_event_handler(sl_zigbee_af_event_t *event)
+{
+  (void)event;
+  sl_zigbee_af_event_set_delay_ms(&battery_event, APP_BATTERY_REPORT_INTERVAL_MS);
+
+  battery_level_t level = sample_battery();
   if (!publish_battery(level)) {
     schedule_battery_retry();
   }
