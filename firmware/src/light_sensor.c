@@ -10,7 +10,7 @@ void light_sensor_init(void)
   GPIO_PinModeSet(APP_SENSOR_POWER_PORT, APP_SENSOR_POWER_PIN, gpioModePushPull, 0);
   GPIO_PinModeSet(APP_SENSOR_INPUT_PORT, APP_SENSOR_INPUT_PIN, gpioModeDisabled, 0);
 
-  // PA5 is an odd Port A pin and must be explicitly routed to ADC0.
+  // PA3 is an odd Port A pin and must be explicitly routed to ADC0.
   GPIO->ABUSALLOC = ((GPIO->ABUSALLOC & ~_GPIO_ABUSALLOC_AODD0_MASK) | GPIO_ABUSALLOC_AODD0_ADC0);
 }
 

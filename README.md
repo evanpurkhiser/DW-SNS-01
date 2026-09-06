@@ -35,7 +35,7 @@ the XIAO's onboard switched divider, so it needs no additional components.
 ## Wiring
 
 ```text
-D9 / PA4 ----- photoresistor -----+----- D10 / PA5
+D9 / PA4 ----- photoresistor -----+----- D8 / PA3
                                   |
                                 10 kOhm
                                   |

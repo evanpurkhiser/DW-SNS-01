@@ -16,7 +16,7 @@ The prototype uses:
 - Rechargeable 3.7 V battery
 
 The photoresistor and pulldown form a voltage divider. D9 drives the divider
-only during sampling, and D10 feeds the MG24 ADC. This removes the divider's
+only during sampling, and D8 feeds the MG24 ADC. This removes the divider's
 continuous current while the device sleeps.
 
 The XIAO's onboard battery-monitor circuit connects its divided battery voltage

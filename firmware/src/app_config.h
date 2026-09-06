@@ -1,12 +1,12 @@
 #ifndef APP_CONFIG_H
 #define APP_CONFIG_H
 
-// D9 (PA4) powers the LDR; D10 (PA5) reads the LDR/10k divider midpoint.
+// D9 (PA4) powers the LDR; D8 (PA3) reads the LDR/10k divider midpoint.
 #define APP_SENSOR_POWER_PORT gpioPortA
 #define APP_SENSOR_POWER_PIN 4U
 #define APP_SENSOR_INPUT_PORT gpioPortA
-#define APP_SENSOR_INPUT_PIN 5U
-#define APP_SENSOR_INPUT iadcPosInputPortAPin5
+#define APP_SENSOR_INPUT_PIN 3U
+#define APP_SENSOR_INPUT iadcPosInputPortAPin3
 
 // The onboard divider exposes half of VBAT on PD4 while PD3 is high.
 #define APP_BATTERY_ENABLE_PORT gpioPortD
