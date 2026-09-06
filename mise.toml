@@ -21,6 +21,15 @@ bin_path = "."
 macos-arm64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.1.0-mac-arm64.zip", checksum = "sha256:f2b465488ac7133ec823baded40d473652e495ef3cdcf91f195d3ddbc44341a6" }
 linux-x64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.1.0-linux-x64.zip", checksum = "sha256:8c2dd5091c15d5dd7b8fc978a512c49d9b9c5da83d4d0b820cfe983b38ef3612" }
 
+[tools."http:openocd"]
+version = "0.12.0-arduino1-static"
+bin_path = "bin"
+strip_components = 1
+
+[tools."http:openocd".platforms]
+macos-arm64 = { url = "https://downloads.arduino.cc/tools/openocd-0.12.0-arduino1-static-x86_64-apple-darwin19.tar.bz2", checksum = "sha256:098def8648d19a98f437c2b9458743bd78e6093b6883b67d52262dd73482ce31" }
+linux-x64 = { url = "https://downloads.arduino.cc/tools/openocd-0.12.0-arduino1-static-x86_64-ubuntu16.04-linux-gnu.tar.bz2", checksum = "sha256:c48b4b348a68c3394e29fb7469a9eadf815a029e223b1612faff86bf4e7f053c" }
+
 [env]
 SILABS_HOME = "{{config_root}}/.silabs-home"
 
@@ -60,6 +69,10 @@ run = "prek run --all-files"
 [tasks.build]
 description = "Build the XIAO MG24 firmware"
 run = "make firmware"
+
+[tasks.flash]
+description = "Build and flash the connected XIAO MG24"
+run = "make flash"
 
 [tasks.check]
 description = "Run formatting, lint, tests, and the firmware build"

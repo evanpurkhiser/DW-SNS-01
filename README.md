@@ -102,6 +102,7 @@ Useful focused tasks are:
 mise run test
 mise run format
 mise run build
+mise run flash
 mise run generate
 ```
 
@@ -110,17 +111,18 @@ the lower-level implementation and support explicit path overrides when needed.
 
 ## Monitoring
 
+Connect the XIAO over USB and run `mise run flash` to build, program, verify,
+and reset it through its onboard CMSIS-DAP interface. The application image
+starts at `0x08006000`, preserving the XIAO bootloader.
+
 Reset or power-cycle the XIAO if it has entered EM4, then run
-`mise run monitor` to open the serial console. Flashing is currently performed
-outside the managed development environment and will be documented separately.
+`mise run monitor` to open the serial console.
 
 Override auto-detected USB settings when needed:
 
 ```sh
 PORT=/dev/cu.usbmodemXXXX BAUD=115200 mise run monitor
 ```
-
-The firmware image starts at `0x08006000`, preserving the XIAO bootloader.
 
 ## Pairing
 

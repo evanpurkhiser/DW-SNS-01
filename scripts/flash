@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+image=${IMAGE:-"$root/firmware/build/debug/dishwasher_sensor.hex"}
+adapter_speed_khz=${ADAPTER_SPEED_KHZ:-1000}
+
+if [[ ! -f "$image" ]]; then
+	echo "Firmware image not found: $image" >&2
+	exit 1
+fi
+
+openocd \
+	-f interface/cmsis-dap.cfg \
+	-f target/efm32s2_g23.cfg \
+	-c "adapter speed $adapter_speed_khz; init; reset_config srst_nogate; reset halt" \
+	-c "program {$image} verify; reset; exit"
