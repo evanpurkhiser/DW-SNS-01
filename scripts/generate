@@ -5,10 +5,18 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 silabs_home=${SILABS_HOME:-"$root/.silabs-home"}
 cd "$root"
 
-slc_dir=$(HOME="$silabs_home" slt where slc-cli/6.0.23 --ignore-slconf --non-interactive)
-java_dir=$(HOME="$silabs_home" slt where java21 --ignore-slconf --non-interactive)
+package_path() {
+	HOME="$silabs_home" slt where "$1" --ignore-slconf --non-interactive
+}
 
-if [[ -z "$slc_dir" || -z "$java_dir" ]]; then
+slc_dir=$(package_path slc-cli/6.0.23)
+java_dir=$(package_path java21/21.0.6)
+python_dir=$(package_path python/3.10.3)
+zap_dir=$(package_path zap/2026.06.17)
+sdk_dir=$(package_path simplicity-sdk/2025.6.2)
+gcc_dir=$(package_path gcc-arm-none-eabi/12.2.rel1)
+
+if [[ -z "$slc_dir" || -z "$java_dir" || -z "$python_dir" || -z "$zap_dir" || -z "$sdk_dir" || -z "$gcc_dir" ]]; then
 	echo "Silicon Labs packages are missing; run 'mise run setup' first" >&2
 	exit 1
 fi
@@ -21,7 +29,13 @@ fi
 HOME="$silabs_home" JAVA_HOME="$java_home" JAVA_TOOL_OPTIONS="-Duser.home=$silabs_home" \
 	PATH="$java_home/bin:$PATH" "$slc_dir/slc" generate \
 	firmware/dishwasher_sensor.slcp \
-	--slt-config silabs/user.slconf \
+	--ignore-slt \
+	--sdk-package-path "$sdk_dir" \
+	--toolchain-locations "gcc:$gcc_dir" \
+	--tool-path "$java_dir" \
+	--tool-path "$python_dir" \
+	--tool-path "$slc_dir" \
+	--tool-path "$zap_dir" \
 	--with brd4187c \
 	--export-destination firmware \
 	--force
