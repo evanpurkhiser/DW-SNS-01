@@ -465,6 +465,7 @@
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\pa-conversions\efr32xg24</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\rail_util_power_manager_init</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\rail_util_pti</state>
+                    <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\rail_util_rf_path_switch</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\security\sl_component\se_manager\inc</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\util\plugin\security_manager</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\service\sl_main\inc</state>
@@ -891,6 +892,7 @@
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\pa-conversions\efr32xg24</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\rail_util_power_manager_init</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\rail_util_pti</state>
+                    <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\radio\rail_lib\plugin\rail_util_rf_path_switch</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\security\sl_component\se_manager\inc</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\util\plugin\security_manager</state>
                     <state>$PROJ_DIR$\..\.silabs-home\.silabs\slt\installs\conan\p\simpleb526998f4a4d\p\platform\service\sl_main\inc</state>

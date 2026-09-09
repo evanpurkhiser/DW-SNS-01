@@ -65,7 +65,7 @@ Pins, thresholds, and timing are collected in
   sends are retried up to three times at five-minute intervals.
 - If connection attempts fail for two minutes, the device enters EM4 until it
   is reset or power-cycled.
-- The built-in ceramic antenna is selected and the radio transmits at 19 dBm.
+- The built-in ceramic antenna is selected.
 
 The Zigbee manufacturer is `Evan Purkhiser` and the model is `DW-SNS-01`.
 Battery percentage is an estimate derived from unloaded voltage, not a
@@ -114,6 +114,13 @@ the lower-level implementation and support explicit path overrides when needed.
 Connect the XIAO over USB and run `mise run flash` to build, program, verify,
 and reset it through its onboard CMSIS-DAP interface. The application image
 starts at `0x08006000`, preserving the XIAO bootloader.
+
+Production builds disable diagnostic output, VCOM, and EM2 debug support. They
+also put the onboard flash into deep power-down, power the antenna switch only
+while the radio is active, use an 8 dBm radio, and poll their Zigbee parent
+every 15 minutes. Run `mise run flash:debug` to build and flash firmware with
+diagnostics enabled. Packet tracing remains disabled in both builds because
+the generated PD4 trace route conflicts with the XIAO's battery ADC.
 
 Reset or power-cycle the XIAO if it has entered EM4, then run
 `mise run monitor` to open the serial console.

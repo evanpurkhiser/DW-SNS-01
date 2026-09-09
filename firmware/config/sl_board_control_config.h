@@ -31,11 +31,13 @@
 #ifndef SL_BOARD_CONTROL_CONFIG_H
 #define SL_BOARD_CONTROL_CONFIG_H
 
+#include "app_build_config.h"
+
 // <<< Use Configuration Wizard in Context Menu >>>
 
 // <q SL_BOARD_ENABLE_VCOM> Enable Virtual COM UART
 // <i> Default: 0
-#define SL_BOARD_ENABLE_VCOM                    1
+#define SL_BOARD_ENABLE_VCOM                    APP_DEBUG_BUILD
 
 // <q SL_BOARD_ENABLE_DISPLAY> Enable Display
 // <i> Default: 0

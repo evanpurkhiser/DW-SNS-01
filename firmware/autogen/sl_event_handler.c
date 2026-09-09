@@ -1,5 +1,6 @@
 #include "sl_event_handler.h"
 
+#include "app_build_config.h"
 #include "sl_board_init.h"
 #include "sl_clock_manager.h"
 #include "sl_hfxo_manager.h"
@@ -23,6 +24,7 @@
 #include "nvm3_default.h"
 #include "sl_cos.h"
 #include "sl_iostream_handles.h"
+#include "sl_rail_util_rf_path_switch.h"
 
 void sli_driver_permanent_allocation(void)
 {
@@ -57,21 +59,29 @@ void sli_internal_init_early(void)
 
 void sl_driver_init(void)
 {
+#if APP_DEBUG_BUILD
   sl_debug_swo_init();
+#endif
   sl_gpio_init();
+#if APP_DEBUG_BUILD
   sl_cos_send_config();
+#endif
 }
 
 void sl_service_init(void)
 {
+#if APP_DEBUG_BUILD
   sl_board_configure_vcom();
+#endif
   sl_hfxo_manager_init();
   sl_mbedtls_init();
   psa_crypto_init();
   sl_se_init();
+#if APP_DEBUG_BUILD
   sl_iostream_init_instances_stage_1();
   sl_iostream_init_instances_stage_2();
   sl_cli_instances_init();
+#endif
   sl_token_manager_init();
 }
 
@@ -85,6 +95,7 @@ void sl_stack_init(void)
   sli_zigbee_stack_sleep_init();
   sli_zigbee_app_framework_sleep_init();
   sli_zb_sec_man_upgrade_key_storage();
+  sl_rail_util_rf_path_switch_init();
 }
 
 void sl_internal_app_init(void)
@@ -97,7 +108,9 @@ void sli_platform_process_action(void)
 
 void sli_service_process_action(void)
 {
+#if APP_DEBUG_BUILD
   sl_cli_instances_tick();
+#endif
 }
 
 void sli_stack_process_action(void)
@@ -112,12 +125,16 @@ void sli_internal_app_process_action(void)
 
 void sl_iostream_init_instances_stage_1(void)
 {
+#if APP_DEBUG_BUILD
   sl_iostream_debug_init();
   sl_iostream_eusart_init_instances();
+#endif
 }
 
 void sl_iostream_init_instances_stage_2(void)
 {
+#if APP_DEBUG_BUILD
   sl_iostream_set_console_instance();
+#endif
 }
 

@@ -25,3 +25,5 @@ HOME="$silabs_home" JAVA_HOME="$java_home" JAVA_TOOL_OPTIONS="-Duser.home=$silab
 	--with brd4187c \
 	--export-destination firmware \
 	--force
+
+git apply --whitespace=nowarn scripts/xiao-generated-overrides.patch

@@ -6,6 +6,7 @@
 #include "end-device-support.h"
 #include "light_sensor.h"
 #include "network-steering.h"
+#include "sl_mx25_flash_shutdown.h"
 #include "sl_power_manager.h"
 #include "sl_sleeptimer.h"
 #include "state_detector.h"
@@ -19,6 +20,9 @@ static sl_zigbee_af_event_t battery_event;
 static state_detector_t detector;
 static bool pairing_awake_requirement;
 static bool state_reported_for_connection;
+static uint8_t battery_retry_count;
+
+#if APP_DEBUG_BUILD
 static bool awake_period_active;
 static uint32_t awake_period_started_tick;
 static uint32_t awake_ticks_since_sample;
@@ -26,7 +30,6 @@ static uint32_t longest_awake_ticks_since_sample;
 static uint16_t wake_count_since_sample;
 static uint32_t report_started_tick;
 static bool report_timing_active;
-static uint8_t battery_retry_count;
 static sl_power_manager_em_transition_event_handle_t power_transition_handle;
 
 static uint32_t ticks_to_microseconds(uint32_t ticks)
@@ -59,6 +62,15 @@ static const sl_power_manager_em_transition_event_info_t power_transition_info =
                  SL_POWER_MANAGER_EVENT_TRANSITION_LEAVING_EM2),
   .on_event = power_transition_callback,
 };
+#endif
+
+static void configure_radio_power(void)
+{
+  sl_status_t status = sl_zigbee_set_radio_power(APP_RADIO_TX_POWER_DBM);
+  sl_zigbee_app_debug_println("radio: tx power=%d dBm status=0x%lx", APP_RADIO_TX_POWER_DBM,
+                              (unsigned long)status);
+  (void)status;
+}
 
 static void pairing_led_off(void)
 {
@@ -199,12 +211,14 @@ static void report_sent_callback(sl_zigbee_outgoing_message_type_t type, uint16_
   (void)message;
   sl_zigbee_app_debug_println("report tx: destination=0x%04x cluster=0x%04x status=0x%lx",
                               destination, aps_frame->clusterId, (unsigned long)status);
+#if APP_DEBUG_BUILD
   if (report_timing_active) {
     uint32_t elapsed = sl_sleeptimer_get_tick_count() - report_started_tick;
     sl_zigbee_app_debug_println("timing: sensor-to-report=%lu us",
                                 (unsigned long)ticks_to_microseconds(elapsed));
     report_timing_active = false;
   }
+#endif
   if (status != SL_STATUS_OK) {
     state_reported_for_connection = false;
   }
@@ -228,6 +242,7 @@ static bool publish_state(bool running)
 
   sl_zigbee_app_debug_println("report: dishwasher=%s attr=0x%x queue=0x%lx", running ? "ON" : "OFF",
                               attribute_status, (unsigned long)send_status);
+  (void)attribute_status;
   return send_status == SL_STATUS_OK;
 }
 
@@ -333,6 +348,7 @@ static void battery_event_handler(sl_zigbee_af_event_t *event)
 static void sample_event_handler(sl_zigbee_af_event_t *event)
 {
   (void)event;
+#if APP_DEBUG_BUILD
   uint32_t sample_started_tick = sl_sleeptimer_get_tick_count();
   uint32_t previous_awake_ticks = awake_ticks_since_sample;
   uint32_t previous_longest_ticks = longest_awake_ticks_since_sample;
@@ -340,6 +356,7 @@ static void sample_event_handler(sl_zigbee_af_event_t *event)
   awake_ticks_since_sample = 0U;
   longest_awake_ticks_since_sample = 0U;
   wake_count_since_sample = 0U;
+#endif
 
   light_sensor_reading_t reading = light_sensor_sample();
   state_detector_result_t result = state_detector_update(&detector, reading.millivolts);
@@ -348,19 +365,25 @@ static void sample_event_handler(sl_zigbee_af_event_t *event)
                               result.state ? "ON" : "OFF", result.changed ? " changed" : "");
 
   if (detector.initialized && (result.changed || !state_reported_for_connection)) {
+#if APP_DEBUG_BUILD
     report_started_tick = sample_started_tick;
     report_timing_active = true;
+#endif
     state_reported_for_connection = publish_state(result.state);
+#if APP_DEBUG_BUILD
     if (!state_reported_for_connection) {
       report_timing_active = false;
     }
+#endif
   }
+#if APP_DEBUG_BUILD
   uint32_t sample_ticks = sl_sleeptimer_get_tick_count() - sample_started_tick;
   sl_zigbee_app_debug_println(
     "timing: sample-work=%lu us prior-non-EM2=%lu us wakes=%u longest=%lu us",
     (unsigned long)ticks_to_microseconds(sample_ticks),
     (unsigned long)ticks_to_microseconds(previous_awake_ticks), previous_wake_count,
     (unsigned long)ticks_to_microseconds(previous_longest_ticks));
+#endif
   sl_zigbee_af_event_set_delay_ms(&sample_event, APP_SAMPLE_INTERVAL_MS);
 }
 
@@ -369,13 +392,13 @@ void sl_zigbee_af_main_init_cb(void)
   const state_detector_config_t config = {APP_SENSOR_ON_MV, APP_SENSOR_OFF_MV,
                                           APP_REQUIRED_STABLE_SAMPLES};
   (void)state_detector_init(&detector, &config);
+#if APP_DEBUG_BUILD
   sl_power_manager_subscribe_em_transition_event(&power_transition_handle, &power_transition_info);
-  GPIO_PinModeSet(APP_RF_SWITCH_POWER_PORT, APP_RF_SWITCH_POWER_PIN, gpioModePushPull, 1);
-  sl_sleeptimer_delay_millisecond(100U);
+#else
+  sl_mx25_flash_shutdown();
+#endif
   GPIO_PinModeSet(APP_RF_SWITCH_SELECT_PORT, APP_RF_SWITCH_SELECT_PIN, gpioModePushPull, 0);
-  sl_status_t radio_status = sl_zigbee_set_radio_power(APP_RADIO_TX_POWER_DBM);
-  sl_zigbee_app_debug_println("radio: tx power=%d dBm status=0x%lx", APP_RADIO_TX_POWER_DBM,
-                              (unsigned long)radio_status);
+  configure_radio_power();
   light_sensor_init();
   battery_sensor_init();
   GPIO_PinModeSet(APP_PAIRING_LED_PORT, APP_PAIRING_LED_PIN, gpioModePushPull, 1);
@@ -394,6 +417,7 @@ void sl_zigbee_af_stack_status_cb(sl_status_t status)
 {
   if (status == SL_STATUS_NETWORK_UP) {
     sl_zigbee_app_debug_println("pairing: joined");
+    configure_radio_power();
     initialize_device_identity();
     sl_zigbee_af_event_set_inactive(&connection_timeout_event);
     state_reported_for_connection = false;

@@ -21,6 +21,7 @@ component:
   - id: zigbee_reporting
   - id: zigbee_scan_dispatch
   - id: zigbee_update_tc_link_key
+  - id: rail_util_rf_path_switch
   - id: clock_manager
   - id: emlib_iadc
   - id: emlib_gpio

@@ -11,7 +11,7 @@ ARM_GCC_DIR ?= $(shell HOME="$(SILABS_HOME)" $(SLT) where gcc-arm-none-eabi/12.2
 PORT ?= $(firstword $(wildcard /dev/cu.usbmodem* /dev/ttyACM*))
 BAUD ?= 115200
 
-.PHONY: help all check test firmware flash monitor clean check-firmware-tools check-flash-tools
+.PHONY: help all check test firmware firmware-debug flash flash-debug monitor clean check-firmware-tools check-flash-tools
 
 help:
 	@echo "DW-SNS-01 developer commands"
@@ -19,7 +19,9 @@ help:
 	@echo "  make check     Run host-side tests and build the firmware"
 	@echo "  make test      Run host-side state detector tests"
 	@echo "  make firmware  Build the XIAO MG24 firmware"
+	@echo "  make firmware-debug  Build firmware with diagnostics enabled"
 	@echo "  make flash     Build and flash the connected XIAO MG24"
+	@echo "  make flash-debug  Build and flash diagnostic firmware"
 	@echo "  make monitor   Open the serial console with screen"
 	@echo "  make clean     Remove host and firmware build products"
 
@@ -35,7 +37,13 @@ check-firmware-tools:
 	@test -x "$(ARM_GCC_DIR)/bin/arm-none-eabi-gcc" || { echo "GNU Arm toolchain not found; set ARM_GCC_DIR"; exit 1; }
 
 firmware: check-firmware-tools
-	$(MAKE) -C $(FIRMWARE_DIR) -f dishwasher_sensor.Makefile all \
+	$(MAKE) -C $(FIRMWARE_DIR) -f dishwasher_sensor.Makefile release \
+		ARM_GCC_DIR="$(ARM_GCC_DIR)" \
+		SDK_PATH="$(SILABS_SDK_DIR)" \
+		PKG_PATH="$(SILABS_INSTALLS_DIR)"
+
+firmware-debug: check-firmware-tools
+	$(MAKE) -C $(FIRMWARE_DIR) -f dishwasher_sensor.Makefile debug \
 		ARM_GCC_DIR="$(ARM_GCC_DIR)" \
 		SDK_PATH="$(SILABS_SDK_DIR)" \
 		PKG_PATH="$(SILABS_INSTALLS_DIR)"
@@ -45,6 +53,9 @@ check-flash-tools:
 
 flash: firmware check-flash-tools
 	scripts/flash
+
+flash-debug: firmware-debug check-flash-tools
+	IMAGE="$(FIRMWARE_DIR)/build/debug/dishwasher_sensor.hex" scripts/flash
 
 monitor:
 	@test -n "$(PORT)" || { echo "Serial port not found; set PORT"; exit 1; }

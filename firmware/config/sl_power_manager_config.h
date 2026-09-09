@@ -33,6 +33,8 @@
 #ifndef SL_POWER_MANAGER_CONFIG_H
 #define SL_POWER_MANAGER_CONFIG_H
 
+#include "app_build_config.h"
+
 // <h>Power Manager Configuration
 
 // <q SL_POWER_MANAGER_CUSTOM_HF_OSCILLATOR_IRQ_HANDLER> Enable custom IRQ handler for external HF oscillator.
@@ -70,7 +72,7 @@
 // <i> Force PD0B/PD0D to stay on during EM2 entry. This allows the debugger to remain connected in EM2 and EM3.
 // <i> Enabling debug connectivity results in an increased power consumption in EM2/EM3.
 // <i> Default: 1
-#define SL_POWER_MANAGER_INIT_EMU_EM2_DEBUG_ENABLE 1
+#define SL_POWER_MANAGER_INIT_EMU_EM2_DEBUG_ENABLE APP_DEBUG_BUILD
 // </e>
 
 // </h>

@@ -70,9 +70,17 @@ run = "prek run --all-files"
 description = "Build the XIAO MG24 firmware"
 run = "make firmware"
 
+[tasks."build:debug"]
+description = "Build the XIAO MG24 firmware with diagnostics enabled"
+run = "make firmware-debug"
+
 [tasks.flash]
 description = "Build and flash the connected XIAO MG24"
 run = "make flash"
+
+[tasks."flash:debug"]
+description = "Build and flash diagnostic firmware"
+run = "make flash-debug"
 
 [tasks.check]
 description = "Run formatting, lint, tests, and the firmware build"

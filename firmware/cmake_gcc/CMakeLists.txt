@@ -8,9 +8,15 @@ project(
 	LANGUAGES C CXX ASM
 )
 
+option(APP_DEBUG_BUILD "Enable firmware diagnostics" OFF)
+
 # Include the definition of the slc_dishwasher_sensor target,
 # which contains the content of the SLC project
 include(dishwasher_sensor.cmake)
+
+target_compile_definitions(slc PUBLIC
+    APP_DEBUG_BUILD=$<IF:$<BOOL:${APP_DEBUG_BUILD}>,1,0>
+)
 
 add_executable(dishwasher_sensor
     # Add additional sources here
@@ -18,10 +24,6 @@ add_executable(dishwasher_sensor
 
 target_include_directories(dishwasher_sensor PUBLIC
     # Add additional include paths here
-)
-
-target_compile_definitions(dishwasher_sensor PUBLIC
-    # Add additional macros here
 )
 
 target_compile_options(dishwasher_sensor PUBLIC

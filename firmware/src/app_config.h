@@ -1,6 +1,8 @@
 #ifndef APP_CONFIG_H
 #define APP_CONFIG_H
 
+#include "app_build_config.h"
+
 // D9 (PA4) powers the LDR; D8 (PA3) reads the LDR/10k divider midpoint.
 #define APP_SENSOR_POWER_PORT gpioPortA
 #define APP_SENSOR_POWER_PIN 4U
@@ -16,9 +18,8 @@
 #define APP_BATTERY_INPUT iadcPosInputPortDPin4
 #define APP_BATTERY_SETTLE_US 1000U
 
-// Power the XIAO RF switch and select its built-in ceramic antenna.
-#define APP_RF_SWITCH_POWER_PORT gpioPortB
-#define APP_RF_SWITCH_POWER_PIN 5U
+// Select the XIAO's built-in ceramic antenna. The RAIL RF path switch
+// component gates the switch's PB5 power input with radio activity.
 #define APP_RF_SWITCH_SELECT_PORT gpioPortB
 #define APP_RF_SWITCH_SELECT_PIN 4U
 
@@ -37,7 +38,11 @@
 #define APP_BATTERY_REPORT_INTERVAL_MS (12UL * 60UL * 60UL * 1000UL)
 #define APP_BATTERY_REPORT_RETRY_MS (5UL * 60UL * 1000UL)
 #define APP_BATTERY_REPORT_MAX_RETRIES 3U
+#if APP_DEBUG_BUILD
 #define APP_RADIO_TX_POWER_DBM 19
+#else
+#define APP_RADIO_TX_POWER_DBM 8
+#endif
 
 #define APP_ENDPOINT 1U
 #define APP_COORDINATOR_ENDPOINT 1U

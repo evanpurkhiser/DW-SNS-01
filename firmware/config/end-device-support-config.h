@@ -26,7 +26,13 @@
 // <o SL_ZIGBEE_AF_PLUGIN_END_DEVICE_SUPPORT_LONG_POLL_INTERVAL_SECONDS> Long Poll Interval (seconds) <1-65535>
 // <i> Default: 300
 // <i> The amount of time (in seconds) the device will wait between MAC data polls to ensure connectivity with its parent.
-#define SL_ZIGBEE_AF_PLUGIN_END_DEVICE_SUPPORT_LONG_POLL_INTERVAL_SECONDS   300
+#include "app_build_config.h"
+
+#if APP_DEBUG_BUILD
+#define SL_ZIGBEE_AF_PLUGIN_END_DEVICE_SUPPORT_LONG_POLL_INTERVAL_SECONDS 300
+#else
+#define SL_ZIGBEE_AF_PLUGIN_END_DEVICE_SUPPORT_LONG_POLL_INTERVAL_SECONDS 900
+#endif
 
 // <o SL_ZIGBEE_AF_PLUGIN_END_DEVICE_SUPPORT_WAKE_TIMEOUT_SECONDS> Wake Timeout (seconds) <1-65535>
 // <i> Default: 3

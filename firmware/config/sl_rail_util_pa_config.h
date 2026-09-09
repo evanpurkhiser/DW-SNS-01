@@ -31,12 +31,18 @@
 #ifndef SL_RAIL_UTIL_PA_CONFIG_H
 #define SL_RAIL_UTIL_PA_CONFIG_H
 
+#include "app_build_config.h"
+
 // <<< Use Configuration Wizard in Context Menu >>>
 
 // <h> PA Configuration
 // <o SL_RAIL_UTIL_PA_POWER_DECI_DBM> Initial PA Power (deci-dBm, 100 = 10.0 dBm)
 // <i> Default: 100
+#if APP_DEBUG_BUILD
 #define SL_RAIL_UTIL_PA_POWER_DECI_DBM      190
+#else
+#define SL_RAIL_UTIL_PA_POWER_DECI_DBM      80
+#endif
 
 // <o SL_RAIL_UTIL_PA_RAMP_TIME_US> PA Ramp Time (microseconds)
 // <0-65535:1>

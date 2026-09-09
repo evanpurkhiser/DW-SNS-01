@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-image=${IMAGE:-"$root/firmware/build/debug/dishwasher_sensor.hex"}
+image=${IMAGE:-"$root/firmware/build/release/dishwasher_sensor.hex"}
 adapter_speed_khz=${ADAPTER_SPEED_KHZ:-1000}
 
 if [[ ! -f "$image" ]]; then

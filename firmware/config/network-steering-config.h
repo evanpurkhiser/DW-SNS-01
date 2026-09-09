@@ -16,6 +16,8 @@
 
 // <<< Use Configuration Wizard in Context Menu >>>
 
+#include "app_build_config.h"
+
 // <h>Zigbee Network Steering configuration
 
 // <o SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_CHANNEL_MASK> Channel Mask (hex) <0-0xFFFFFFFF> <f.h>
@@ -26,7 +28,11 @@
 // <o SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_RADIO_TX_POWER> Radio output power <-8..20>
 // <i> Default: 3
 // <i> The radio output power (in dBm) at which the node will operate.
-#define SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_RADIO_TX_POWER   19
+#if APP_DEBUG_BUILD
+#define SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_RADIO_TX_POWER 19
+#else
+#define SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_RADIO_TX_POWER 8
+#endif
 
 // <q SL_ZIGBEE_AF_PLUGIN_NETWORK_STEERING_RADIO_TX_CALLBACK> Get radio output power from callback
 // <i> Default: FALSE

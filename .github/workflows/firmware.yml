@@ -7,6 +7,7 @@ on:
       - "mise.toml"
       - "silabs/**"
       - "scripts/generate"
+      - "scripts/xiao-generated-overrides.patch"
       - ".github/workflows/firmware.yml"
   pull_request:
     paths:
@@ -15,6 +16,7 @@ on:
       - "mise.toml"
       - "silabs/**"
       - "scripts/generate"
+      - "scripts/xiao-generated-overrides.patch"
       - ".github/workflows/firmware.yml"
   workflow_dispatch:
 concurrency:
@@ -41,7 +43,24 @@ jobs:
           key: silabs-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('silabs/pkg.lock') }}
       - name: Install Silicon Labs SDK
         run: mise run setup:silabs
+      - name: Verify generated project
+        run: |
+          mise run generate
+          git diff --exit-code -- \
+            firmware/autogen/sl_component_catalog.h \
+            firmware/autogen/sl_event_handler.c \
+            firmware/autogen/sl_power_manager_handler.c \
+            firmware/config/end-device-support-config.h \
+            firmware/config/network-steering-config.h \
+            firmware/config/sl_board_control_config.h \
+            firmware/config/sl_mx25_flash_shutdown_eusart_config.h \
+            firmware/config/sl_power_manager_config.h \
+            firmware/config/sl_rail_util_rf_path_switch_config.h \
+            firmware/config/sl_rail_util_pti_config.h \
+            firmware/config/sl_zigbee_debug_print_config.h
       - name: Test state detector
         run: mise run test
       - name: Build firmware
         run: mise run build
+      - name: Build diagnostic firmware
+        run: mise run build:debug

@@ -25,8 +25,9 @@ settle, and then switches it off again. No external battery-sensing components
 are required.
 
 The XIAO antenna switch is board-specific hardware not configured by the
-BRD4187C-generated project. Firmware drives PB5 high to power the switch and
-PB4 low to select the built-in ceramic antenna.
+BRD4187C-generated project. PB4 stays low to select the built-in ceramic
+antenna. The radio-active PRS signal drives PB5, powering the switch for both
+receive and transmit operations and removing its idle current during EM2.
 
 ## Detection
 
@@ -84,6 +85,11 @@ While joined, the application enters EM2 between samples. A normal sensor
 sample takes about 3.6 ms. Measured application wake time is roughly 12 ms per
 10-second interval when no radio report is needed. Zigbee reporting adds radio
 and stack wake time only when the detected state changes.
+
+Production builds place the onboard P25Q32SH flash in deep power-down, disable
+VCOM and EM2 debug support, use 8 dBm transmit power, and set the sleepy-end-
+device long-poll interval to 15 minutes. Diagnostic builds retain the debug
+interfaces and use 19 dBm transmit power for bench testing.
 
 Battery measurement adds roughly 1 ms of divider settling plus ADC conversion
 twice per day. Remaining percentage is estimated from a piecewise-linear,
