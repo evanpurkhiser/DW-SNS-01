@@ -18,7 +18,8 @@ if [[ -d "$java_dir/jre" ]]; then
 	java_home="$java_dir/jre"
 fi
 
-HOME="$silabs_home" JAVA_HOME="$java_home" "$slc_dir/slc" generate \
+HOME="$silabs_home" JAVA_HOME="$java_home" JAVA_TOOL_OPTIONS="-Duser.home=$silabs_home" \
+	PATH="$java_home/bin:$PATH" "$slc_dir/slc" generate \
 	firmware/dishwasher_sensor.slcp \
 	--slt-config silabs/user.slconf \
 	--with brd4187c \
