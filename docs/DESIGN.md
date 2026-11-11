@@ -2,9 +2,10 @@
 
 ## Purpose
 
-DW-SNS-01 detects the red floor indicator projected by a dishwasher and
-publishes that binary state to a Zigbee network. The electronics stay outside
-the appliance and require no electrical connection to it.
+DW-SNS-01 detects the red floor indicator projected by a dishwasher
+and publishes that binary state to a Zigbee network.
+The electronics stay outside the appliance
+and require no electrical connection to it.
 
 ## Hardware
 
@@ -15,24 +16,28 @@ The prototype uses:
 - 10 kOhm pulldown resistor
 - Rechargeable 3.7 V battery
 
-The photoresistor and pulldown form a voltage divider. D9 drives the divider
-only during sampling, and D8 feeds the MG24 ADC. This removes the divider's
-continuous current while the device sleeps.
+The photoresistor and pulldown form a voltage divider.
+D9 drives the divider only during sampling, and D8 feeds the MG24 ADC.
+This removes the divider's continuous current while the device sleeps.
 
 The XIAO's onboard battery-monitor circuit connects its divided battery voltage
-to PD4. Firmware drives PD3 only while measuring it, waits for the divider to
-settle, and then switches it off again. No external battery-sensing components
-are required.
+to PD4.
+Firmware drives PD3 only while measuring it, waits for the divider to settle,
+and then switches it off again.
+No external battery-sensing components are required.
 
 The XIAO antenna switch is board-specific hardware not configured by the
-BRD4187C-generated project. PB4 stays low to select the built-in ceramic
-antenna. The radio-active PRS signal drives PB5, powering the switch for both
-receive and transmit operations and removing its idle current during EM2.
+BRD4187C-generated project.
+PB4 stays low to select the built-in ceramic antenna.
+The radio-active PRS signal drives PB5,
+powering the switch for both receive and transmit operations
+and removing its idle current during EM2.
 
 ## Detection
 
-The installed dishwasher indicator produces approximately 1.05 to 1.65 V at
-the ADC. The sensor reads approximately 0.30 to 0.52 V outside the indicator.
+The installed dishwasher indicator produces approximately 1.05 to 1.65 V at the
+ADC.
+The sensor reads approximately 0.30 to 0.52 V outside the indicator.
 The detector therefore uses:
 
 | Setting        | Value  |
@@ -42,15 +47,15 @@ The detector therefore uses:
 | Stable samples | 2      |
 | Sample period  | 10 s   |
 
-Separate ON and OFF thresholds provide hysteresis. Requiring consecutive
-samples prevents a single noisy conversion or passing shadow from changing
-the reported state.
+Separate ON and OFF thresholds provide hysteresis.
+Requiring consecutive samples prevents a single noisy conversion
+or passing shadow from changing the reported state.
 
 ## Zigbee model
 
-The device joins as a Zigbee 3.0 sleepy end device and exposes endpoint 1 as
-an Occupancy Sensor. The occupancy attribute maps directly to dishwasher
-indicator state:
+The device joins as a Zigbee 3.0 sleepy end device and exposes endpoint 1
+as an Occupancy Sensor.
+The occupancy attribute maps directly to dishwasher indicator state:
 
 | Occupancy | Meaning                  |
 | --------- | ------------------------ |
@@ -58,47 +63,56 @@ indicator state:
 | 1         | Dishwasher indicator on  |
 
 State changes are sent directly to coordinator address `0x0000`, endpoint 1.
-The manufacturer and model Basic-cluster attributes are `Evan Purkhiser` and
-`DW-SNS-01`.
+The manufacturer and model Basic-cluster attributes are `Evan Purkhiser`
+and `DW-SNS-01`.
 
-The Power Configuration cluster exposes battery voltage in 100 mV units and
-battery percentage in Zigbee's half-percent units. Both attributes are sent
-immediately after a connection and every 12 hours thereafter. A failed report
-is retried after five minutes, up to three times. After exhausting that budget,
+The Power Configuration cluster exposes battery voltage in 100 mV units
+and battery percentage in Zigbee's half-percent units.
+Both attributes are sent immediately after a connection
+and every 12 hours thereafter.
+A failed report is retried after five minutes, up to three times.
+After exhausting that budget,
 the device sleeps until the next regular 12-hour report.
 
 ## Connection lifecycle
 
-When no network is available, the device stays awake and starts network
-steering or saved-network rejoin attempts. The yellow user LED blinks every
-500 ms during this phase. A successful join displays a solid yellow LED for
-two seconds before normal low-power operation begins.
+When no network is available,
+the device stays awake and starts network steering
+or saved-network rejoin attempts.
+The yellow user LED blinks every 500 ms during this phase.
+A successful join displays a solid yellow LED for two seconds
+before normal low-power operation begins.
 
-Connection attempts stop after two minutes. The device then enters EM4 and
-requires a reset or power cycle. This bounds battery drain when the coordinator
-is unavailable, at the cost of not recovering automatically from a prolonged
-network outage.
+Connection attempts stop after two minutes.
+The device then enters EM4 and requires a reset or power cycle.
+This bounds battery drain when the coordinator is unavailable,
+at the cost of not recovering automatically from a prolonged network outage.
 
 ## Power behavior
 
-While joined, the application enters EM2 between samples. A normal sensor
-sample takes about 3.6 ms. Measured application wake time is roughly 12 ms per
-10-second interval when no radio report is needed. Zigbee reporting adds radio
-and stack wake time only when the detected state changes.
+While joined, the application enters EM2 between samples.
+A normal sensor sample takes about 3.6 ms. Measured application wake time is
+roughly 12 ms per 10-second interval when no radio report is needed.
+Zigbee reporting adds radio and stack wake time only
+when the detected state changes.
 
-Production builds place the onboard P25Q32SH flash in deep power-down, disable
-VCOM and EM2 debug support, use 8 dBm transmit power, and set the sleepy-end-
-device long-poll interval to 15 minutes. Diagnostic builds retain the debug
-interfaces and use 19 dBm transmit power for bench testing.
+Production builds place the onboard P25Q32SH flash in deep power-down,
+disable VCOM and EM2 debug support, use 8 dBm transmit power,
+and set the sleepy-end-device long-poll interval to 15 minutes.
+Diagnostic builds retain the debug interfaces and use 19 dBm transmit power
+for bench testing.
 
 Battery measurement adds roughly 1 ms of divider settling plus ADC conversion
-twice per day. Remaining percentage is estimated from a piecewise-linear,
-rested-voltage curve for a single-cell lithium-ion battery. It is useful for a
-low-battery indication but is not as precise as coulomb counting, particularly
-under load or near the flat middle of the discharge curve.
+twice per day.
+Remaining percentage is estimated from a piecewise-linear,
+rested-voltage curve for a single-cell lithium-ion battery.
+It is useful for a low-battery indication but is not as precise
+as coulomb counting, particularly under load
+or near the flat middle of the discharge curve.
 
-Debug output and the USB bridge affect bench measurements. Final battery-life
-validation should be performed from the battery terminals with USB removed.
+Debug output and the USB bridge affect bench measurements.
+Final battery-life validation should be performed from the battery terminals
+with USB removed.
 
 ## Source boundaries
 
@@ -112,5 +126,5 @@ The application keeps hardware acquisition and state policy separate:
 - `app.c` owns Zigbee lifecycle, reporting, status LED behavior, and sleep.
 - `app_config.h` collects board pins and tunable policy constants.
 
-`state_detector.c` and `battery_level.c` have host-side tests because their
-behavior is deterministic and independent of the Silicon Labs SDK.
+`state_detector.c` and `battery_level.c` have host-side tests
+because their behavior is deterministic and independent of the Silicon Labs SDK.
