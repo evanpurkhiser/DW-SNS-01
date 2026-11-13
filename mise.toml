@@ -14,12 +14,15 @@ tombi = "1.5.1"
 yamlfmt = "0.21.0"
 
 [tools."http:slt"]
-version = "1.1.0"
+version = "1.2.3"
 bin_path = "."
+# Silicon Labs' CDN rejects mise's CI User-Agent. Use the wget
+# User-Agent documented for headless SLT installation.
+headers = { "User-Agent" = "Wget/1.21.3" }
 
 [tools."http:slt".platforms]
-macos-arm64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.1.0-mac-arm64.zip", checksum = "sha256:f2b465488ac7133ec823baded40d473652e495ef3cdcf91f195d3ddbc44341a6" }
-linux-x64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.1.0-linux-x64.zip", checksum = "sha256:8c2dd5091c15d5dd7b8fc978a512c49d9b9c5da83d4d0b820cfe983b38ef3612" }
+macos-arm64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.2.3-mac-arm64.zip", checksum = "sha256:0b7518ad5311a171b5887f076d31259e5b78b001cd1942166358378bb84d82fb" }
+linux-x64 = { url = "https://www.silabs.com/documents/public/software/slt-cli-1.2.3-linux-x64.zip", checksum = "sha256:62d87094379b88781bd24e681ad41ffd1e89e572d099d518e92947ebec117796" }
 
 [tools."http:openocd"]
 version = "0.12.0-arduino1-static"
